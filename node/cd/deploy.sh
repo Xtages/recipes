@@ -25,5 +25,5 @@ export TF_VAR_ORG="${XTAGES_ORG}"
 # This is a workaround to use variables in the Terraform state file
 # https://github.com/hashicorp/terraform/issues/13022#issuecomment-294262392
 terraform init \
-  -backend-config "key=${TF_VAR_APP_NAME}"
+  -backend-config "key=tfstate/us-east-1/production/${XTAGES_ORG}/${XTAGES_PROJECT}/app/${XTAGES_APP_ENV}"
 terraform plan && terraform apply -auto-approve

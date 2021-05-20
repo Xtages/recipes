@@ -13,11 +13,11 @@ data "aws_route53_zone" "xtages_zone" {
 }
 
 data "aws_lb" "xtages_console_lb" {
-  arn  = data.terraform_remote_state.xtages.outputs.xtages_console_alb_arn
+  arn = data.terraform_remote_state.xtages.outputs.xtages_console_alb_arn
 }
 
 data "aws_acm_certificate" "xtages_cert" {
-  domain = "xtages.dev"
+  domain   = "xtages.dev"
   statuses = ["ISSUED"]
 }
 
@@ -29,7 +29,7 @@ data "template_file" "console_task_definition" {
   template = file("${path.root}/templates/application.json.tpl")
   vars = {
     REPOSITORY_URL = replace(data.aws_ecr_repository.xtages_console_repo.repository_url, "https://", "")
-    TAG = var.TAG
-    APP_NAME = var.APP_NAME
+    TAG            = var.TAG
+    APP_NAME       = var.APP_NAME
   }
 }
