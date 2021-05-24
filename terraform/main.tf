@@ -17,25 +17,42 @@ resource "aws_route53_record" "app_cname_record" {
   type            = "CNAME"
   zone_id         = data.aws_route53_zone.xtages_zone.zone_id
   ttl             = 60
-  records         = [data.aws_lb.xtages_console_lb.dns_name]
+  records         = [data.aws_lb.xtages_customers_lb.dns_name]
   allow_overwrite = true
 }
 
 resource "aws_lb_listener" "xtages_service_secure" {
-  load_balancer_arn = data.aws_lb.xtages_console_lb.arn
+  load_balancer_arn = data.aws_lb.xtages_customers_lb.arn
   port              = 443
   protocol          = "HTTPS"
   certificate_arn   = data.aws_acm_certificate.xtages_cert.id
   ssl_policy        = "ELBSecurityPolicy-2016-08"
 
+// TODO(mdellamerlina) we need to define a dafault TG for all apps and orgs
   default_action {
     target_group_arn = aws_lb_target_group.app_target_group.id
     type             = "forward"
   }
 }
 
+resource "aws_lb_listener_rule" "xtages_listener_app_rule" {
+  listener_arn = aws_lb_listener.xtages_service_secure.arn
+
+  action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.app_target_group.id
+  }
+
+  condition {
+    host_header {
+      values = ["${var.APP_NAME}.${var.APP_ORG}.xtages.dev"]
+    }
+
+  }
+}
+
 resource "aws_lb_listener" "app_service_lb_listener" {
-  load_balancer_arn = data.aws_lb.xtages_console_lb.arn
+  load_balancer_arn = data.aws_lb.xtages_customers_lb.arn
   port              = 80
   protocol          = "HTTP"
 
@@ -54,7 +71,7 @@ resource "aws_lb_target_group" "app_target_group" {
   name     = "${local.app_id}-tg"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = data.terraform_remote_state.xtages.outputs.vpc_id
+  vpc_id   = data.terraform_remote_state.xtages_infra.outputs.vpc_id
   tags     = local.tags
 
   health_check {
@@ -69,10 +86,10 @@ resource "aws_lb_target_group" "app_target_group" {
 
 resource "aws_ecs_service" "xtages_console_service" {
   name            = local.app_id
-  cluster         = data.terraform_remote_state.xtages.outputs.xtages_ecs_cluster_id
+  cluster         = data.terraform_remote_state.xtages_infra.outputs.xtages_ecs_cluster_id
   task_definition = aws_ecs_task_definition.app_task_definition.arn
   desired_count   = 1
-  iam_role        = data.terraform_remote_state.xtages.outputs.ecs_service_role_arn
+  iam_role        = data.terraform_remote_state.xtages_infra.outputs.ecs_service_role_arn
   tags            = local.tags
 
   load_balancer {

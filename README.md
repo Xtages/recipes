@@ -11,3 +11,12 @@ This is a bash script (unfortunately) where it will:
 2. create the docker image that will contain the application
 3. push the image to ECR 
 4. Deploy the application to ECS with Terraform
+
+## Testing
+
+```shell
+docker run --rm -it -v ~/.ssh/:/root/.ssh:ro \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-v ~/.aws/:/root/.aws:ro \
+606626603369.dkr.ecr.us-east-1.amazonaws.com/xtages-build-images/node_cd:15.13.0 bash
+```
