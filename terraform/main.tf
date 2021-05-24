@@ -1,5 +1,5 @@
 locals {
-  app_id = "${var.APP_ORG}-${var.APP_NAME}"
+  app_id = "${var.APP_NAME}-${var.APP_ORG}"
   tags = {
     Application  = var.APP_NAME,
     Organization = var.APP_ORG,
@@ -28,10 +28,14 @@ resource "aws_lb_listener" "xtages_service_secure" {
   certificate_arn   = data.aws_acm_certificate.xtages_cert.id
   ssl_policy        = "ELBSecurityPolicy-2016-08"
 
-// TODO(mdellamerlina) we need to define a dafault TG for all apps and orgs
   default_action {
-    target_group_arn = aws_lb_target_group.app_target_group.id
-    type             = "forward"
+    type = "redirect"
+
+    redirect {
+      status_code = "HTTP_302"
+      host = "xtages.com"
+      path = "404.html"
+    }
   }
 }
 
@@ -45,7 +49,7 @@ resource "aws_lb_listener_rule" "xtages_listener_app_rule" {
 
   condition {
     host_header {
-      values = ["${var.APP_NAME}.${var.APP_ORG}.xtages.dev"]
+      values = ["${local.app_id}.xtages.dev"]
     }
 
   }
@@ -84,7 +88,7 @@ resource "aws_lb_target_group" "app_target_group" {
   }
 }
 
-resource "aws_ecs_service" "xtages_console_service" {
+resource "aws_ecs_service" "xtages_app_service" {
   name            = local.app_id
   cluster         = data.terraform_remote_state.xtages_infra.outputs.xtages_ecs_cluster_id
   task_definition = aws_ecs_task_definition.app_task_definition.arn
@@ -94,7 +98,7 @@ resource "aws_ecs_service" "xtages_console_service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.app_target_group.id
-    container_name   = local.app_id
+    container_name   = var.APP_NAME
     container_port   = 3000
   }
 }
