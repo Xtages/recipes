@@ -29,12 +29,12 @@ resource "aws_lb_listener" "xtages_service_secure" {
   ssl_policy        = "ELBSecurityPolicy-2016-08"
 
   default_action {
-    type = "redirect"
+    type = "fixed-response"
 
-    redirect {
-      status_code = "HTTP_302"
-      host = "xtages.com"
-      path = "404.html"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "404: page not found"
+      status_code = 404
     }
   }
 }
@@ -85,6 +85,10 @@ resource "aws_lb_target_group" "app_target_group" {
     timeout             = 30
     interval            = 60
     matcher             = "200,301,302"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
