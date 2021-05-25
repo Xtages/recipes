@@ -8,7 +8,7 @@ locals {
 }
 
 resource "aws_ecr_repository" "cd_repo" {
-  name = "${var.APP_ORG}/${var.APP_NAME}-${var.APP_ENV}"
+  name                 = "${var.APP_ORG}/${var.APP_NAME}-${var.APP_ENV}"
   image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
@@ -50,7 +50,7 @@ resource "aws_lb_listener" "xtages_service_secure" {
     fixed_response {
       content_type = "text/plain"
       message_body = "404: page not found"
-      status_code = 404
+      status_code  = 404
     }
   }
 }
@@ -59,7 +59,7 @@ resource "aws_lb_listener_rule" "xtages_listener_app_rule" {
   listener_arn = aws_lb_listener.xtages_service_secure.arn
 
   action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.app_target_group.id
   }
 
@@ -67,8 +67,8 @@ resource "aws_lb_listener_rule" "xtages_listener_app_rule" {
     host_header {
       values = ["${local.app_id}.xtages.dev"]
     }
-
   }
+
 }
 
 resource "aws_lb_listener" "app_service_lb_listener" {
