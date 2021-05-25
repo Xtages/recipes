@@ -1,13 +1,13 @@
 locals {
   app_id = "${var.APP_NAME}-${var.APP_ORG}"
   tags = {
-    Application  = var.APP_NAME,
-    Organization = var.APP_ORG,
-    Environment  = var.APP_ENV
+    application  = var.APP_NAME,
+    organization = var.APP_ORG,
+    environment  = var.APP_ENV
   }
 }
 
-resource "aws_ecr_repository" "cd_repo" {
+resource "aws_ecr_repository" "deploy_app_repo" {
   name                 = "${var.APP_ORG}/${var.APP_NAME}-${var.APP_ENV}"
   image_tag_mutability = "IMMUTABLE"
 
@@ -24,7 +24,7 @@ resource "aws_ecr_repository" "cd_repo" {
 
 resource "aws_ecs_task_definition" "app_task_definition" {
   family                = local.app_id
-  container_definitions = data.template_file.console_task_definition.rendered
+  container_definitions = data.template_file.app_task_definition.rendered
   tags                  = local.tags
 }
 
