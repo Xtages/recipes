@@ -7,7 +7,6 @@ APP_TAG=$4
 PROJECT_PATH=../../../project_src
 cp Dockerfile $PROJECT_PATH
 cd $PROJECT_PATH || exit
-#TAG=$(date -u '+%Y%m%d%H%M')-$(git rev-parse --short HEAD)
 XTAGES_PROJECT=$(basename -s .git "$(git config --get remote.origin.url)")
 
 # build docker image and push it to ECR
