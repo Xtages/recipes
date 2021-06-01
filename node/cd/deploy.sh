@@ -20,8 +20,9 @@ export TF_VAR_TAG="${APP_TAG}"
 export TF_VAR_APP_NAME="${XTAGES_PROJECT}"
 export TF_VAR_APP_ENV="${XTAGES_APP_ENV}"
 export TF_VAR_APP_ORG="${XTAGES_ORG}"
+
 terraform init \
-  -backend-config "key=tfstate/us-east-1/production/${TF_VAR_APP_ORG}/${TF_VAR_APP_NAME}/app/${TF_VAR_APP_ENV}"
+  -backend-config "key=tfstate/us-east-1/production/${TF_VAR_APP_ORG}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME}"
 terraform plan && terraform apply -auto-approve
 
 cd "${PROJECT_PATH}" || exit
@@ -36,5 +37,5 @@ cd "${RECIPES_BASE_PATH}"/terraform || exit
 # This is a workaround to use variables in the Terraform state file
 # https://github.com/hashicorp/terraform/issues/13022#issuecomment-294262392
 terraform init \
-  -backend-config "key=tfstate/us-east-1/production/${TF_VAR_APP_ORG}/${TF_VAR_APP_NAME}/app/${TF_VAR_APP_ENV}"
+  -backend-config "key=tfstate/us-east-1/production/${TF_VAR_APP_ORG}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME}"
 terraform plan && terraform apply -auto-approve
