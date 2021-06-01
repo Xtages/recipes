@@ -18,6 +18,7 @@ cd "${RECIPES_BASE_PATH}/${PROJECT_TYPE}"/cd || exit
 cp Dockerfile ${PROJECT_PATH}
 cd "${PROJECT_PATH}" || exit
 XTAGES_PROJECT="$(basename -s .git "$(git config --get remote.origin.url)")"
+XTAGES_PROJECT=$(echo "${XTAGES_PROJECT}" | tr '[:upper:]' '[:lower:]')
 
 cd "${PROJECT_PATH}"|| exit
 # build docker image and push it to ECR
