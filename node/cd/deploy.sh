@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 PROJECT_TYPE=$1
 XTAGES_APP_ENV=$2
 NODE_VERSION=$3
