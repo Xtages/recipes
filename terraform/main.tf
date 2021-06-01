@@ -7,21 +7,6 @@ locals {
   }
 }
 
-resource "aws_ecr_repository" "deploy_app_repo" {
-  name                 = "${var.APP_ORG}/${var.APP_NAME}-${var.APP_ENV}"
-  image_tag_mutability = "IMMUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-
-  encryption_configuration {
-    encryption_type = "KMS"
-  }
-
-  tags = local.tags
-}
-
 resource "aws_ecs_task_definition" "app_task_definition" {
   family                = local.app_id
   container_definitions = data.template_file.app_task_definition.rendered
@@ -35,6 +20,21 @@ resource "aws_route53_record" "app_cname_record" {
   ttl             = 60
   records         = [data.aws_lb.xtages_customers_lb.dns_name]
   allow_overwrite = true
+}
+
+resource "aws_ecr_repository" "deploy_app_repo" {
+  name                 = "${var.APP_ORG}/${var.APP_NAME}-${var.APP_ENV}"
+  image_tag_mutability = "IMMUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "KMS"
+  }
+
+  tags = local.tags
 }
 
 resource "aws_lb_listener" "xtages_service_secure" {
