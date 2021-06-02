@@ -22,21 +22,6 @@ resource "aws_route53_record" "app_cname_record" {
   allow_overwrite = true
 }
 
-resource "aws_ecr_repository" "deploy_app_repo" {
-  name                 = "${var.APP_ORG}/${var.APP_NAME}-${var.APP_ENV}"
-  image_tag_mutability = "IMMUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-
-  encryption_configuration {
-    encryption_type = "KMS"
-  }
-
-  tags = local.tags
-}
-
 resource "aws_lb_listener" "xtages_service_secure" {
   load_balancer_arn = data.aws_lb.xtages_customers_lb.arn
   port              = 443
