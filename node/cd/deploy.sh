@@ -22,8 +22,8 @@ cd "${PROJECT_PATH}"
 # build docker image and push it to ECR
 # docker login is performed in the buildspec (S3)
 docker build --build-arg NODE_VERSION="${NODE_VERSION}" \
-  --tag 606626603369.dkr.ecr.us-east-1.amazonaws.com/"${XTAGES_ORG}/${XTAGES_PROJECT}-${XTAGES_APP_ENV}:${APP_TAG}" .
-docker push 606626603369.dkr.ecr.us-east-1.amazonaws.com/"${XTAGES_ORG}/${XTAGES_PROJECT}-${XTAGES_APP_ENV}:${APP_TAG}"
+  --tag 606626603369.dkr.ecr.us-east-1.amazonaws.com/"${XTAGES_ORG}/${XTAGES_PROJECT}:${XTAGES_APP_ENV}-${APP_TAG}" .
+docker push 606626603369.dkr.ecr.us-east-1.amazonaws.com/"${XTAGES_ORG}/${XTAGES_PROJECT}:${XTAGES_APP_ENV}-${APP_TAG}"
 
 # deploy to ECS with Terraform
 
