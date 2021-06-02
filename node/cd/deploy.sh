@@ -38,5 +38,4 @@ cd "${RECIPES_BASE_PATH}"/terraform
 # https://github.com/hashicorp/terraform/issues/13022#issuecomment-294262392
 terraform init \
   -backend-config "key=tfstate/us-east-1/production/${TF_VAR_APP_ORG}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME}"
-terraform plan && TF_LOG=trace terraform apply -auto-approve &> log.log
-cat log.log | grep "DEBUG: Request"
+terraform plan && terraform apply -auto-approve
