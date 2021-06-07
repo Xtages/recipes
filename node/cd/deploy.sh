@@ -18,7 +18,6 @@ cd "${PROJECT_PATH}"
 XTAGES_PROJECT="$(basename -s .git "$(git config --get remote.origin.url)")"
 XTAGES_PROJECT=$(echo "${XTAGES_PROJECT}" | tr '[:upper:]' '[:lower:]')
 
-cd "${PROJECT_PATH}"
 # build docker image and push it to ECR
 # docker login is performed in the buildspec (S3)
 docker build --build-arg NODE_VERSION="${NODE_VERSION}" \
@@ -26,7 +25,6 @@ docker build --build-arg NODE_VERSION="${NODE_VERSION}" \
 docker push 606626603369.dkr.ecr.us-east-1.amazonaws.com/"${XTAGES_ORG}/${XTAGES_PROJECT}:${XTAGES_APP_ENV}-${APP_TAG}"
 
 # deploy to ECS with Terraform
-
 # env variables used by Terraform
 export TF_VAR_TAG="${APP_TAG}"
 export TF_VAR_APP_NAME="${XTAGES_PROJECT}"
