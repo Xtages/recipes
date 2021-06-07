@@ -10,6 +10,7 @@ locals {
 resource "aws_ecs_task_definition" "app_task_definition" {
   family                = local.app_id
   container_definitions = data.template_file.app_task_definition.rendered
+  task_role_arn         = aws_iam_role.ecs_app_task_role.arn
   tags                  = local.tags
 }
 
