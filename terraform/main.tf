@@ -1,5 +1,6 @@
 locals {
-  app_id = "${var.APP_NAME}-${var.APP_ORG}-${var.APP_ENV}"
+  app_id = "${var.APP_ORG}-${var.APP_NAME}--${var.APP_ENV}"
+  app_cname = "${var.APP_ENV}-${var.APP_NAME}-${var.APP_ORG}"
   tags = {
     application  = var.APP_NAME,
     organization = var.APP_ORG,
@@ -15,7 +16,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
 }
 
 resource "aws_route53_record" "app_cname_record" {
-  name            = "${local.app_id}.xtages.dev"
+  name            = "${local.app_cname}.xtages.dev"
   type            = "CNAME"
   zone_id         = data.aws_route53_zone.xtages_zone.zone_id
   ttl             = 60
@@ -51,7 +52,7 @@ resource "aws_lb_listener_rule" "xtages_listener_app_rule" {
 
   condition {
     host_header {
-      values = ["${local.app_id}.xtages.dev"]
+      values = ["${local.app_cname}.xtages.dev"]
     }
   }
 
