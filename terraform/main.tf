@@ -11,7 +11,7 @@ locals {
 resource "aws_ecs_task_definition" "app_task_definition" {
   family                = var.APP_NAME_HASH
   container_definitions = data.template_file.app_task_definition.rendered
-  task_role_arn         = aws_iam_role.ecs_app_task_role.arn
+  task_role_arn         = data.terraform_remote_state.apps_iam_roles.outputs.apps_iam_role_arn
   tags                  = local.tags
 }
 

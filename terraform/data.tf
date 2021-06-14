@@ -7,6 +7,15 @@ data "terraform_remote_state" "xtages_infra" {
   }
 }
 
+data "terraform_remote_state" "apps_iam_roles" {
+  backend = "s3"
+  config = {
+    bucket = "xtages-tfstate"
+    key    = "tfstate/us-east-1/production/apps/iam"
+    region = "us-east-1"
+  }
+}
+
 data "aws_route53_zone" "xtages_zone" {
   name         = "xtages.dev"
   private_zone = false
