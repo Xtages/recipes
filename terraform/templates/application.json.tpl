@@ -6,6 +6,7 @@
     "cpu": 2048,
     "image": "${REPOSITORY_URL}:${TAG}",
     "workingDirectory": "/",
+    "taskRoleArn": "apps-task-role"
     "command": ["node", "/usr/src/app/src/server.js"],
     "portMappings": [
         {
