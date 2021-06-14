@@ -4,7 +4,7 @@ set -euo pipefail
 FROM_IMAGE_TAG="${1}"
 TO_IMAGE_TAG="${2}"
 
-ECR_REPO_NAME="${XTAGES_ORG}/${XTAGES_PROJECT}"
+ECR_REPO_NAME="${XTAGES_PROJECT}"
 
 # grab the manifest of the staging image
 MANIFEST=$(aws ecr batch-get-image \
