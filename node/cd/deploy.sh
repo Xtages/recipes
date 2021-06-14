@@ -15,8 +15,8 @@ cd "${PROJECT_PATH}"
 
 # build docker image and push it to ECR
 # docker login is performed in the buildspec (S3)
-IMAGE_NAME="606626603369.dkr.ecr.us-east-1.amazonaws.com/${XTAGES_ORG}/${XTAGES_PROJECT}:staging-${XTAGES_GH_PROJECT_TAG}"
-docker build --build-arg XTAGES_NODE_VERSION="${XTAGES_NODE_VER}" --tag "${IMAGE_NAME}" .
+IMAGE_NAME="606626603369.dkr.ecr.us-east-1.amazonaws.com/${XTAGES_PROJECT}:staging-${XTAGES_GH_PROJECT_TAG}"
+docker build --build-arg NODE_VERSION="${XTAGES_NODE_VER}" --tag "${IMAGE_NAME}" .
 docker push "${IMAGE_NAME}"
 
 # deploy to ECS with Terraform

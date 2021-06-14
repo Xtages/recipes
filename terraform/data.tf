@@ -22,7 +22,7 @@ data "aws_acm_certificate" "xtages_cert" {
 }
 
 data "aws_ecr_repository" "xtages_app_repo" {
-  name = "${var.APP_ORG}/${var.APP_NAME}"
+  name = var.APP_NAME_HASH
 }
 
 data "template_file" "app_task_definition" {
@@ -30,6 +30,6 @@ data "template_file" "app_task_definition" {
   vars = {
     REPOSITORY_URL = replace(data.aws_ecr_repository.xtages_app_repo.repository_url, "https://", "")
     TAG            = "${var.APP_ENV}-${var.TAG}"
-    APP_NAME       = var.APP_NAME
+    APP_NAME       = var.APP_NAME_HASH
   }
 }

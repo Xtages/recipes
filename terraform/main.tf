@@ -1,15 +1,15 @@
 locals {
-  app_id = "${var.APP_ORG}-${var.APP_NAME}--${var.APP_ENV}"
-  app_cname = "${var.APP_ENV}-${var.APP_NAME}-${var.APP_ORG}"
+  app_cname = "${var.APP_ENV}-${substr(var.APP_NAME_HASH, 1, 12)}"
   tags = {
-    application  = var.APP_NAME,
-    organization = var.APP_ORG,
-    environment  = var.APP_ENV
+    application       = var.APP_NAME_HASH,
+    organization      = var.APP_ORG,
+    organization-hash = var.APP_ORG_HASH
+    environment       = var.APP_ENV
   }
 }
 
 resource "aws_ecs_task_definition" "app_task_definition" {
-  family                = local.app_id
+  family                = var.APP_NAME_HASH
   container_definitions = data.template_file.app_task_definition.rendered
   task_role_arn         = aws_iam_role.ecs_app_task_role.arn
   tags                  = local.tags
@@ -75,11 +75,11 @@ resource "aws_lb_listener" "app_service_lb_listener" {
 }
 
 resource "aws_lb_target_group" "app_target_group" {
-  name     = "${local.app_id}-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = data.terraform_remote_state.xtages_infra.outputs.vpc_id
-  tags     = local.tags
+  name        = var.APP_NAME_HASH
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = data.terraform_remote_state.xtages_infra.outputs.vpc_id
+  tags        = local.tags
 
   health_check {
     path                = "/"
@@ -96,7 +96,7 @@ resource "aws_lb_target_group" "app_target_group" {
 }
 
 resource "aws_ecs_service" "xtages_app_service" {
-  name            = local.app_id
+  name            = var.APP_NAME_HASH
   cluster         = data.terraform_remote_state.xtages_infra.outputs.xtages_ecs_cluster_id
   task_definition = aws_ecs_task_definition.app_task_definition.arn
   desired_count   = 1
@@ -105,7 +105,7 @@ resource "aws_ecs_service" "xtages_app_service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.app_target_group.id
-    container_name   = var.APP_NAME
+    container_name   = var.APP_NAME_HASH
     container_port   = 3000
   }
 }
