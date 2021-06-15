@@ -1,5 +1,6 @@
 locals {
   app_cname = "${var.APP_ENV}-${substr(var.APP_NAME_HASH, 1, 12)}"
+  app_id    = "${var.APP_NAME_HASH}-${var.APP_ENV}"
   tags = {
     application       = var.APP_NAME_HASH,
     organization      = var.APP_ORG,
@@ -9,7 +10,7 @@ locals {
 }
 
 resource "aws_ecs_task_definition" "app_task_definition" {
-  family                = var.APP_NAME_HASH
+  family                = local.app_id
   container_definitions = data.template_file.app_task_definition.rendered
   task_role_arn         = data.terraform_remote_state.apps_iam_roles.outputs.apps_iam_role_arn
   tags                  = local.tags
@@ -75,7 +76,7 @@ resource "aws_lb_listener" "app_service_lb_listener" {
 }
 
 resource "aws_lb_target_group" "app_target_group" {
-  name        = var.APP_NAME_HASH
+  name        = local.app_id
   port        = 80
   protocol    = "HTTP"
   vpc_id      = data.terraform_remote_state.xtages_infra.outputs.vpc_id
@@ -96,7 +97,7 @@ resource "aws_lb_target_group" "app_target_group" {
 }
 
 resource "aws_ecs_service" "xtages_app_service" {
-  name            = var.APP_NAME_HASH
+  name            = local.app_id
   cluster         = data.terraform_remote_state.xtages_infra.outputs.xtages_ecs_cluster_id
   task_definition = aws_ecs_task_definition.app_task_definition.arn
   desired_count   = 1
