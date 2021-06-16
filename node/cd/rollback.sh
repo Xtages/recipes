@@ -6,11 +6,5 @@ RECIPES_BASE_PATH="$PWD"
 
 SCRIPT_DIR=$(dirname "${0}")
 
-PREVIOUS_PRODUCTION_IMAGE_TAG="production-${XTAGES_PREVIOUS_GH_PROJECT_TAG}"
-PRODUCTION_IMAGE_TAG="production-${XTAGES_GH_PROJECT_TAG}"
-
-# re-tag the staging image to prod
-sh -x "${RECIPES_BASE_PATH}/${SCRIPT_DIR}"/_re_tag_image.sh "${PREVIOUS_PRODUCTION_IMAGE_TAG}" "${PRODUCTION_IMAGE_TAG}"
-
 # deploy to ECS with Terraform
-sh -x "${RECIPES_BASE_PATH}/${SCRIPT_DIR}"/_deploy_to_ecs.sh "${RECIPES_BASE_PATH}" "production" "${XTAGES_GH_PROJECT_TAG}"
+sh -x "${RECIPES_BASE_PATH}/${SCRIPT_DIR}"/_deploy_to_ecs.sh "${RECIPES_BASE_PATH}" "production" "${XTAGES_PREVIOUS_GH_PROJECT_TAG}"
