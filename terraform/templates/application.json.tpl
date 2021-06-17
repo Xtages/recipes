@@ -3,7 +3,7 @@
         "essential": true,
         "memory": 3072,
         "name": "${APP_NAME}",
-        "cpu": 2048,
+        "cpu": 1792,
         "image": "${APP_REPOSITORY_URL}:${APP_TAG}",
         "workingDirectory": "/",
         "command": ["node", "/usr/src/app/src/server.js"]
