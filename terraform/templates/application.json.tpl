@@ -17,7 +17,7 @@
         "portMappings": [
             {
                 "containerPort": 1800,
-                "protocol": "tcp"
+                "hostPort": 0
             }
          ],
          "environment": [
