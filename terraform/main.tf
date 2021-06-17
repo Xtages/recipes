@@ -105,7 +105,7 @@ resource "aws_ecs_service" "xtages_app_service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.app_target_group.id
-    container_name   = var.APP_NAME_HASH
-    container_port   = 3000
+    container_name   = "nginx"
+    container_port   = 1800
   }
 }

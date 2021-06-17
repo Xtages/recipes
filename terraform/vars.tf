@@ -25,3 +25,13 @@ variable "APP_ORG" {
 variable "APP_ORG_HASH" {
   description = "Hash that identify the Organization"
 }
+
+variable "ecr_nginx_repo" {
+  default = "xtages-nginx"
+  description = "ECR repository that host our nginx version"
+}
+
+variable "nginx_version" {
+  default = "1.18.0"
+  description = "Nginx version that will be pulled from ECR nginx repo using that tag name"
+}

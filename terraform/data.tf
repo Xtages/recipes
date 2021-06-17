@@ -34,11 +34,19 @@ data "aws_ecr_repository" "xtages_app_repo" {
   name = var.APP_NAME_HASH
 }
 
+data "aws_ecr_repository" "xtages_nginx_repo" {
+  name = var.ecr_nginx_repo
+}
+
 data "template_file" "app_task_definition" {
   template = file("${path.root}/templates/application.json.tpl")
   vars = {
-    REPOSITORY_URL = replace(data.aws_ecr_repository.xtages_app_repo.repository_url, "https://", "")
-    TAG            = "${var.APP_ENV}-${var.TAG}"
-    APP_NAME       = var.APP_NAME_HASH
+    APP_REPOSITORY_URL   = replace(data.aws_ecr_repository.xtages_app_repo.repository_url, "https://", "")
+    APP_TAG              = "${var.APP_ENV}-${var.TAG}"
+    APP_NAME             = var.APP_NAME_HASH
+    NGINX_REPOSITORY_URL = replace(data.aws_ecr_repository.xtages_nginx_repo.repository_url, "https://", "")
+    NGINX_TAG            = var.nginx_version
+
+
   }
 }
