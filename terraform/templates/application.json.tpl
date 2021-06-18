@@ -6,13 +6,14 @@
         "cpu": 1792,
         "image": "${APP_REPOSITORY_URL}:${APP_TAG}",
         "workingDirectory": "/",
-        "command": ["node", "/usr/src/app/src/server.js"]
+        "command": ["node", "/usr/src/app/src/server.js"],
         "logConfiguration": {
-            "logDriver": "awslogs"
+            "logDriver": "awslogs",
             "options": {
-                "awslogs-group" : "/ecs/${APP_NAME}-task-definition",
+                "awslogs-create-group": "true",
+                "awslogs-group" : "/ecs/${APP_NAME}",
                 "awslogs-region": "us-east-1",
-                "awslogs-stream-prefix": "ecs"
+                "awslogs-stream-prefix": "ecs-app"
             }
          }
     },
@@ -36,13 +37,14 @@
         ],
         "links": [
             "${APP_NAME}"
-        ]
+        ],
         "logConfiguration": {
-            "logDriver": "awslogs"
+            "logDriver": "awslogs",
             "options": {
-                "awslogs-group" : "/ecs/nginx-task-definition",
+                "awslogs-create-group": "true",
+                "awslogs-group" : "/ecs/${APP_NAME}",
                 "awslogs-region": "us-east-1",
-                "awslogs-stream-prefix": "ecs"
+                "awslogs-stream-prefix": "ecs-nginx"
             }
          }
     }
