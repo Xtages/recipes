@@ -10,7 +10,6 @@
         "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
-                "awslogs-create-group": "true",
                 "awslogs-group" : "/ecs/${APP_NAME}",
                 "awslogs-region": "us-east-1",
                 "awslogs-stream-prefix": "ecs-app"
@@ -33,6 +32,10 @@
             {
                 "name": "APP_NAME",
                 "value": "${APP_NAME}"
+            },
+            {
+                "name": "ORGANIZATION_HASH",
+                "value": "${APP_ORG_HASH}"
             }
         ],
         "links": [
@@ -41,7 +44,6 @@
         "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
-                "awslogs-create-group": "true",
                 "awslogs-group" : "/ecs/${APP_NAME}",
                 "awslogs-region": "us-east-1",
                 "awslogs-stream-prefix": "ecs-nginx"
