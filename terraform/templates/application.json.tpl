@@ -36,6 +36,10 @@
             {
                 "name": "ORGANIZATION_HASH",
                 "value": "${APP_ORG_HASH}"
+            },
+            {
+                "name": "APP_ENV",
+                "value": "${APP_ENV}"
             }
         ],
         "links": [

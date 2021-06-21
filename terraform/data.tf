@@ -47,5 +47,6 @@ data "template_file" "app_task_definition" {
     NGINX_REPOSITORY_URL = replace(data.aws_ecr_repository.xtages_nginx_repo.repository_url, "https://", "")
     NGINX_TAG            = var.nginx_version
     APP_ORG_HASH         = var.APP_ORG_HASH
+    ENVIRONMENT          = var.APP_ENV
   }
 }
