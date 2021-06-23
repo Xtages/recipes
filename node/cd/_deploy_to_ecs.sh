@@ -18,4 +18,4 @@ cd "${RECIPES_BASE_PATH}"/terraform
 # https://github.com/hashicorp/terraform/issues/13022#issuecomment-294262392
 terraform init \
   -backend-config "key=tfstate/us-east-1/production/${TF_VAR_APP_ORG_HASH}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME_HASH}"
-terraform plan && terraform apply -auto-approve
+terraform plan -no-color && terraform apply -auto-approve -no-color
