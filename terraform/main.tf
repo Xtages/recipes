@@ -44,7 +44,7 @@ resource "aws_lb_listener" "xtages_service_secure" {
 
 resource "aws_lb_listener_certificate" "customer_cert_listener" {
   count = var.CUSTOMER_DOMAIN != "" ? 1 : 0
-  certificate_arn = data.aws_acm_certificate.customer_cer.arn
+  certificate_arn = data.aws_acm_certificate.customer_cer[0].arn
   listener_arn = aws_lb_listener.xtages_service_secure.arn
 }
 
