@@ -35,3 +35,13 @@ variable "nginx_version" {
   default = "1.18.0"
   description = "Nginx version that will be pulled from ECR nginx repo using that tag name"
 }
+
+variable "HOST_HEADER" {
+  description = "customer URL in case it's hosting their app"
+  default = ""
+}
+
+variable "CUSTOMER_DOMAIN" {
+  description = "customer domain that we'll add to the LB listener"
+  default = ""
+}
