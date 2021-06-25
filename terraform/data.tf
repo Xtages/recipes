@@ -30,6 +30,12 @@ data "aws_acm_certificate" "xtages_cert" {
   statuses = ["ISSUED"]
 }
 
+data "aws_acm_certificate" "customer_cer" {
+  count = var.CUSTOMER_DOMAIN != "" ? 1 : 0
+  domain = var.CUSTOMER_DOMAIN
+  statuses = ["ISSUED"]
+}
+
 data "aws_ecr_repository" "xtages_app_repo" {
   name = var.APP_NAME_HASH
 }
