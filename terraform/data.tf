@@ -54,5 +54,6 @@ data "template_file" "app_task_definition" {
     NGINX_TAG            = var.nginx_version
     APP_ORG_HASH         = var.APP_ORG_HASH
     APP_ENV              = var.APP_ENV
+    APP_BUILD_ID         = var.APP_BUILD_ID
   }
 }

@@ -14,6 +14,7 @@ export TF_VAR_APP_ORG="${XTAGES_ORG}"
 export TF_VAR_APP_ORG_HASH="${XTAGES_ORG_HASH}"
 export TF_VAR_HOST_HEADER="${XTAGES_HOST_HEADER}"
 export TF_VAR_CUSTOMER_DOMAIN="${XTAGES_CUSTOMER_DOMAIN}"
+export TF_VAR_APP_BUILD_ID="${XTAGES_BUILD_ID}"
 
 cd "${RECIPES_BASE_PATH}"/terraform
 # This is a workaround to use variables in the Terraform state file

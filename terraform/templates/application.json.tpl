@@ -12,7 +12,7 @@
             "options": {
                 "awslogs-group" : "/ecs/${APP_NAME}",
                 "awslogs-region": "us-east-1",
-                "awslogs-stream-prefix": "ecs-app"
+                "awslogs-stream-prefix": "${APP_ENV}-${APP_BUILD_ID}"
             }
          }
     },
