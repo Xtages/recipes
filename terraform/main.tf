@@ -43,9 +43,9 @@ resource "aws_lb_listener" "xtages_service_secure" {
 }
 
 resource "aws_lb_listener_certificate" "customer_cert_listener" {
-  count = var.CUSTOMER_DOMAIN != "" ? 1 : 0
+  count           = var.CUSTOMER_DOMAIN != "" ? 1 : 0
   certificate_arn = data.aws_acm_certificate.customer_cer[0].arn
-  listener_arn = aws_lb_listener.xtages_service_secure.arn
+  listener_arn    = aws_lb_listener.xtages_service_secure.arn
 }
 
 resource "aws_lb_listener_rule" "xtages_listener_app_rule" {
@@ -81,11 +81,11 @@ resource "aws_lb_listener" "app_service_lb_listener" {
 }
 
 resource "aws_lb_target_group" "app_target_group" {
-  name        = local.app_id
-  port        = 80
-  protocol    = "HTTP"
-  vpc_id      = data.terraform_remote_state.xtages_infra.outputs.vpc_id
-  tags        = local.tags
+  name     = local.app_id
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = data.terraform_remote_state.xtages_infra.outputs.vpc_id
+  tags     = local.tags
 
   health_check {
     path                = "/"
@@ -102,12 +102,18 @@ resource "aws_lb_target_group" "app_target_group" {
 }
 
 resource "aws_ecs_service" "xtages_app_service" {
-  name            = local.app_id
-  cluster         = data.terraform_remote_state.xtages_infra.outputs.xtages_ecs_cluster_id
-  task_definition = aws_ecs_task_definition.app_task_definition.arn
-  desired_count   = 1
-  iam_role        = data.terraform_remote_state.xtages_infra.outputs.ecs_service_role_arn
-  tags            = local.tags
+  name                = local.app_id
+  cluster             = data.terraform_remote_state.xtages_infra_ecs.outputs.xtages_ecs_cluster_id
+  task_definition     = aws_ecs_task_definition.app_task_definition.arn
+  desired_count       = 1
+  iam_role            = data.terraform_remote_state.xtages_infra_ecs.outputs.ecs_service_role_arn
+  tags                = local.tags
+  scheduling_strategy = "REPLICA"
+
+  ordered_placement_strategy {
+    type  = "binpack"
+    field = "cpu"
+  }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.app_target_group.id
