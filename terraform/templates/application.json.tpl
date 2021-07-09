@@ -10,7 +10,7 @@
         "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
-                "awslogs-group" : "/ecs/${APP_NAME}",
+                "awslogs-group" : "/ecs/${APP_NAME}-${APP_ENV}",
                 "awslogs-region": "us-east-1",
                 "awslogs-stream-prefix": "${APP_ENV}-${APP_BUILD_ID}"
             }
@@ -48,7 +48,7 @@
         "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
-                "awslogs-group" : "/ecs/${APP_NAME}",
+                "awslogs-group" : "/ecs/${APP_NAME}-${APP_ENV}",
                 "awslogs-region": "us-east-1",
                 "awslogs-stream-prefix": "ecs-nginx"
             }

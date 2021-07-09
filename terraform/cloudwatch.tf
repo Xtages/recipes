@@ -19,6 +19,6 @@ resource "aws_cloudwatch_log_metric_filter" "nginx_bytes_sent" {
 }
 
 resource "aws_cloudwatch_log_group" "app_ecs_log_group" {
-  name = "/ecs/${var.APP_NAME_HASH}"
+  name = "/ecs/${var.APP_NAME_HASH}-${var.APP_ENV}"
   tags = local.tags
 }
