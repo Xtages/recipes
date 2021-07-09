@@ -6,6 +6,14 @@ locals {
     organization-hash = var.APP_ORG_HASH
     environment       = var.APP_ENV
   }
+
+  cluster_arn = {
+    staging = data.terraform_remote_state.customer_infra_ecs_staging.outputs.xtages_ecs_cluster_id
+  }
+
+  ecs_iam_role = {
+    staging = data.terraform_remote_state.customer_infra_ecs_staging.outputs.ecs_service_role_arn
+  }
 }
 
 resource "aws_ecs_task_definition" "app_task_definition" {
@@ -103,10 +111,10 @@ resource "aws_lb_target_group" "app_target_group" {
 
 resource "aws_ecs_service" "xtages_app_service" {
   name                = local.app_id
-  cluster             = data.terraform_remote_state.xtages_infra_ecs.outputs.xtages_ecs_cluster_id
+  cluster             = local.cluster_arn[var.APP_ENV]
   task_definition     = aws_ecs_task_definition.app_task_definition.arn
   desired_count       = 1
-  iam_role            = data.terraform_remote_state.xtages_infra_ecs.outputs.ecs_service_role_arn
+  iam_role            = local.ecs_iam_role[var.APP_ENV]
   tags                = local.tags
   scheduling_strategy = "REPLICA"
 

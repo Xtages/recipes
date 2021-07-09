@@ -16,11 +16,20 @@ data "terraform_remote_state" "apps_iam_roles" {
   }
 }
 
-data "terraform_remote_state" "xtages_infra_ecs" {
+data "terraform_remote_state" "customer_infra_ecs_staging" {
   backend = "s3"
   config = {
     bucket = "xtages-tfstate"
-    key    = "tfstate/us-east-1/production/ecs"
+    key    = "tfstate/us-east-1/production/ecs/staging/customers"
+    region = "us-east-1"
+  }
+}
+
+data "terraform_remote_state" "xtages_infra_lbs" {
+  backend = "s3"
+  config = {
+    bucket = "xtages-tfstate"
+    key    = "tfstate/us-east-1/production/lbs/lb-tfstate"
     region = "us-east-1"
   }
 }
@@ -31,7 +40,7 @@ data "aws_route53_zone" "xtages_zone" {
 }
 
 data "aws_lb" "xtages_customers_lb" {
-  arn = data.terraform_remote_state.xtages_infra_ecs.outputs.xtages_customers_alb_arn
+  arn = data.terraform_remote_state.xtages_infra_lbs.outputs.xtages_customers_alb_arn
 }
 
 data "aws_acm_certificate" "xtages_cert" {
