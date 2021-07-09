@@ -8,11 +8,13 @@ locals {
   }
 
   cluster_arn = {
-    staging = data.terraform_remote_state.customer_infra_ecs_staging.outputs.xtages_ecs_cluster_id
+    staging    = data.terraform_remote_state.customer_infra_ecs_staging.outputs.xtages_ecs_cluster_id
+    production = data.terraform_remote_state.customer_infra_ecs_production.outputs.xtages_ecs_cluster_id
   }
 
   ecs_iam_role = {
-    staging = data.terraform_remote_state.customer_infra_ecs_staging.outputs.ecs_service_role_arn
+    staging    = data.terraform_remote_state.customer_infra_ecs_staging.outputs.ecs_service_role_arn
+    production = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_service_role_arn
   }
 }
 
