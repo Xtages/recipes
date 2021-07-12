@@ -23,23 +23,44 @@ resource "aws_cloudwatch_log_group" "app_ecs_log_group" {
   tags = local.tags
 }
 
-resource "aws_cloudwatch_event_rule" "lower_task_staging_after_1h" {
-  count = var.APP_ENV != "staging" ? 1 : 0
-  name = "lower-task-${var.APP_NAME_HASH}-staging"
-//  schedule_expression = "cron(0 1 ${local.day_utc} ${local.month_utc} ? ${local.year_utc}"
-  schedule_expression = "cron(5 0 ${local.day_utc} ${local.month_utc} ? ${local.year_utc}"
-  description = "lower task count for application to zero"
-  tags = local.tags
+resource "aws_appautoscaling_target" "ecs_staging_lower_capacity" {
+  count = var.APP_ENV == "staging" ? 1 : 0
+  max_capacity = 1
+  min_capacity = 0
+  resource_id = "service/xtages-customer-staging/${local.app_id}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace = "ecs"
 }
 
-resource "aws_cloudwatch_event_target" "ecs_lower_task_staging" {
-  count = var.APP_ENV != "staging" ? 1 : 0
-  arn = local.cluster_arn["staging"]
-  rule = aws_cloudwatch_event_rule.lower_task_staging_after_1h.name
-  role_arn = "arn:aws:iam::606626603369:role/CloudWatchEventTargetEcsRole"
+//resource "aws_appautoscaling_policy" "ecs_staging_lower_capacity_policy" {
+//  count = var.APP_ENV == "staging" ? 1 : 0
+//  name = "scale-down"
+//  resource_id = aws_appautoscaling_target.ecs_staging_lower_capacity.resource_id
+//  scalable_dimension = aws_appautoscaling_target.ecs_staging_lower_capacity.scalable_dimension
+//  service_namespace = aws_appautoscaling_target.ecs_staging_lower_capacity.service_namespace
+//
+//  step_scaling_policy_configuration {
+//    adjustment_type = "ChangeInCapacity"
+//    cooldown = 60
+//    metric_aggregation_type = "Maximum"
+//
+//    step_adjustment {
+//      metric_interval_upper_bound = 0
+//      scaling_adjustment = -1
+//    }
+//  }
+//}
 
-  ecs_target {
-    task_definition_arn = aws_ecs_task_definition.app_task_definition.arn
-    task_count = 0
+resource "aws_appautoscaling_scheduled_action" "dynamodb" {
+  count = var.APP_ENV == "staging" ? 1 : 0
+  name               = local.app_id
+  service_namespace  = aws_appautoscaling_target.ecs_staging_lower_capacity.service_namespace
+  resource_id        = aws_appautoscaling_target.ecs_staging_lower_capacity.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_staging_lower_capacity.scalable_dimension
+  schedule           = "cron(5 0 ${local.day_utc} ${local.month_utc} ? ${local.year_utc}"
+
+  scalable_target_action {
+    min_capacity = 0
+    max_capacity = 0
   }
 }
