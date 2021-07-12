@@ -16,6 +16,11 @@ locals {
     staging    = data.terraform_remote_state.customer_infra_ecs_staging.outputs.ecs_service_role_arn
     production = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_service_role_arn
   }
+
+  approx_deploy_time = timeadd(timestamp(), "10m")
+  day_utc = formatdate("DD", local.approx_deploy_time)
+  month_utc = formatdate("MM", local.approx_deploy_time)
+  year_utc = formatdate("YYYY", local.approx_deploy_time)
 }
 
 resource "aws_ecs_task_definition" "app_task_definition" {
