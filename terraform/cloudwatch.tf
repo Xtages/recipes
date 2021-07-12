@@ -32,32 +32,13 @@ resource "aws_appautoscaling_target" "ecs_staging_lower_capacity" {
   service_namespace = "ecs"
 }
 
-//resource "aws_appautoscaling_policy" "ecs_staging_lower_capacity_policy" {
-//  count = var.APP_ENV == "staging" ? 1 : 0
-//  name = "scale-down"
-//  resource_id = aws_appautoscaling_target.ecs_staging_lower_capacity.resource_id
-//  scalable_dimension = aws_appautoscaling_target.ecs_staging_lower_capacity.scalable_dimension
-//  service_namespace = aws_appautoscaling_target.ecs_staging_lower_capacity.service_namespace
-//
-//  step_scaling_policy_configuration {
-//    adjustment_type = "ChangeInCapacity"
-//    cooldown = 60
-//    metric_aggregation_type = "Maximum"
-//
-//    step_adjustment {
-//      metric_interval_upper_bound = 0
-//      scaling_adjustment = -1
-//    }
-//  }
-//}
-
-resource "aws_appautoscaling_scheduled_action" "dynamodb" {
+resource "aws_appautoscaling_scheduled_action" "ecs_staging_lower_capacity_scheduled" {
   count = var.APP_ENV == "staging" ? 1 : 0
   name               = local.app_id
-  service_namespace  = aws_appautoscaling_target.ecs_staging_lower_capacity.service_namespace
-  resource_id        = aws_appautoscaling_target.ecs_staging_lower_capacity.resource_id
-  scalable_dimension = aws_appautoscaling_target.ecs_staging_lower_capacity.scalable_dimension
-  schedule           = "cron(5 0 ${local.day_utc} ${local.month_utc} ? ${local.year_utc}"
+  service_namespace  = aws_appautoscaling_target.ecs_staging_lower_capacity[0].service_namespace
+  resource_id        = aws_appautoscaling_target.ecs_staging_lower_capacity[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_staging_lower_capacity[0].scalable_dimension
+  schedule           = "cron(${local.m} ${local.hour_utc} ${local.day_utc} ${local.month_utc} ? ${local.year_utc})"
 
   scalable_target_action {
     min_capacity = 0

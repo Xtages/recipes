@@ -17,7 +17,9 @@ locals {
     production = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_service_role_arn
   }
 
-  approx_deploy_time = timeadd(timestamp(), "10m")
+  approx_deploy_time = timeadd(timestamp(), "5m")
+  min_utc = formatdate("m", local.approx_deploy_time)
+  hour_utc = formatdate("h", local.approx_deploy_time)
   day_utc = formatdate("DD", local.approx_deploy_time)
   month_utc = formatdate("MM", local.approx_deploy_time)
   year_utc = formatdate("YYYY", local.approx_deploy_time)
