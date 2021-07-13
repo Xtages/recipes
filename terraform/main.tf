@@ -17,12 +17,15 @@ locals {
     production = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_service_role_arn
   }
 
-  approx_deploy_time = timeadd(timestamp(), "5m")
-  min_utc = formatdate("m", local.approx_deploy_time)
-  hour_utc = formatdate("h", local.approx_deploy_time)
-  day_utc = formatdate("DD", local.approx_deploy_time)
-  month_utc = formatdate("MM", local.approx_deploy_time)
-  year_utc = formatdate("YYYY", local.approx_deploy_time)
+  staging_cluster_name = split("/", local.cluster_arn["staging"])[1]
+
+  # to lower the desired count for staging
+  approx_undeploy_time = timeadd(timestamp(), "65m")
+  min_utc = formatdate("m", local.approx_undeploy_time)
+  hour_utc = formatdate("h", local.approx_undeploy_time)
+  day_utc = formatdate("DD", local.approx_undeploy_time)
+  month_utc = formatdate("MM", local.approx_undeploy_time)
+  year_utc = formatdate("YYYY", local.approx_undeploy_time)
 }
 
 resource "aws_ecs_task_definition" "app_task_definition" {
@@ -119,7 +122,7 @@ resource "aws_lb_target_group" "app_target_group" {
 }
 
 resource "aws_ecs_service" "xtages_app_service" {
-  name                = local.app_id
+  name                = var.APP_NAME_HASH
   cluster             = local.cluster_arn[var.APP_ENV]
   task_definition     = aws_ecs_task_definition.app_task_definition.arn
   desired_count       = 1
