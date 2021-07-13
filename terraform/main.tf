@@ -21,11 +21,11 @@ locals {
 
   # to lower the desired count for staging
   approx_undeploy_time = timeadd(timestamp(), "65m")
-  min_utc = formatdate("m", local.approx_undeploy_time)
-  hour_utc = formatdate("h", local.approx_undeploy_time)
-  day_utc = formatdate("DD", local.approx_undeploy_time)
-  month_utc = formatdate("MM", local.approx_undeploy_time)
-  year_utc = formatdate("YYYY", local.approx_undeploy_time)
+  min_utc              = formatdate("m", local.approx_undeploy_time)
+  hour_utc             = formatdate("h", local.approx_undeploy_time)
+  day_utc              = formatdate("DD", local.approx_undeploy_time)
+  month_utc            = formatdate("MM", local.approx_undeploy_time)
+  year_utc             = formatdate("YYYY", local.approx_undeploy_time)
 }
 
 resource "aws_ecs_task_definition" "app_task_definition" {
