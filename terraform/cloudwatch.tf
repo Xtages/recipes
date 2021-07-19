@@ -44,4 +44,6 @@ resource "aws_appautoscaling_scheduled_action" "ecs_staging_lower_capacity_sched
     min_capacity = 0
     max_capacity = 0
   }
+
+  depends_on = [aws_ecs_service.xtages_app_service]
 }

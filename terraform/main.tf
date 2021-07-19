@@ -101,11 +101,12 @@ resource "aws_lb_listener" "app_service_lb_listener" {
 }
 
 resource "aws_lb_target_group" "app_target_group" {
-  name     = local.app_id
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = data.terraform_remote_state.xtages_infra.outputs.vpc_id
-  tags     = local.tags
+  name                 = local.app_id
+  port                 = 80
+  protocol             = "HTTP"
+  vpc_id               = data.terraform_remote_state.xtages_infra.outputs.vpc_id
+  deregistration_delay = 20
+  tags                 = local.tags
 
   health_check {
     path                = "/"
