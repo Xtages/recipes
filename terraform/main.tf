@@ -122,7 +122,7 @@ resource "aws_lb_target_group" "app_target_group" {
 }
 
 resource "aws_ecs_service" "xtages_app_service" {
-  name                = var.APP_NAME_HASH
+  name                = "${var.APP_NAME_HASH}-${var.APP_BUILD_ID}"
   cluster             = local.cluster_arn[var.APP_ENV]
   task_definition     = aws_ecs_task_definition.app_task_definition.arn
   desired_count       = 1
