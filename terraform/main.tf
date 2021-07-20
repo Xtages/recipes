@@ -8,7 +8,6 @@ locals {
   }
 
   environment = {
-    type = map
     staging = {
       cluster_arn            = data.terraform_remote_state.customer_infra_ecs_staging.outputs.xtages_ecs_cluster_id
       ecs_iam_role           = data.terraform_remote_state.customer_infra_ecs_staging.outputs.ecs_service_role_arn
@@ -134,12 +133,11 @@ resource "aws_ecs_service" "xtages_app_service" {
   iam_role            = lookup(local.environment[var.APP_ENV], "ecs_iam_role")
   tags                = local.tags
   scheduling_strategy = "REPLICA"
-  launch_type         = "EC2"
 
   capacity_provider_strategy {
     capacity_provider = lookup(local.environment[var.APP_ENV], "capacity_provider_name")
-    weight            = 0
-    base              = 1
+    weight            = 1
+    base              = 0
   }
 
   ordered_placement_strategy {
