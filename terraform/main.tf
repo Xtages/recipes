@@ -7,17 +7,21 @@ locals {
     environment       = var.APP_ENV
   }
 
-  cluster_arn = {
-    staging    = data.terraform_remote_state.customer_infra_ecs_staging.outputs.xtages_ecs_cluster_id
-    production = data.terraform_remote_state.customer_infra_ecs_production.outputs.xtages_ecs_cluster_id
+  environment = {
+    type = map
+    staging = {
+      cluster_arn            = data.terraform_remote_state.customer_infra_ecs_staging.outputs.xtages_ecs_cluster_id
+      ecs_iam_role           = data.terraform_remote_state.customer_infra_ecs_staging.outputs.ecs_service_role_arn
+      capacity_provider_name = data.terraform_remote_state.customer_infra_ecs_staging.outputs.ecs_capacity_provider_name
+    }
+    production = {
+      cluster_arn            = data.terraform_remote_state.customer_infra_ecs_production.outputs.xtages_ecs_cluster_id
+      ecs_iam_role           = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_service_role_arn
+      capacity_provider_name = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_capacity_provider_name
+    }
   }
 
-  ecs_iam_role = {
-    staging    = data.terraform_remote_state.customer_infra_ecs_staging.outputs.ecs_service_role_arn
-    production = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_service_role_arn
-  }
-
-  staging_cluster_name = split("/", local.cluster_arn["staging"])[1]
+  staging_cluster_name = split("/", local.environment.staging.cluster_arn)[1]
 
   # to lower the desired count for staging
   approx_undeploy_time = timeadd(timestamp(), "65m")
@@ -124,12 +128,19 @@ resource "aws_lb_target_group" "app_target_group" {
 
 resource "aws_ecs_service" "xtages_app_service" {
   name                = var.APP_NAME_HASH
-  cluster             = local.cluster_arn[var.APP_ENV]
+  cluster             = lookup(local.environment[var.APP_ENV], "cluster_arn")
   task_definition     = aws_ecs_task_definition.app_task_definition.arn
   desired_count       = 1
-  iam_role            = local.ecs_iam_role[var.APP_ENV]
+  iam_role            = lookup(local.environment[var.APP_ENV], "ecs_iam_role")
   tags                = local.tags
   scheduling_strategy = "REPLICA"
+  launch_type         = "EC2"
+
+  capacity_provider_strategy {
+    capacity_provider = lookup(local.environment[var.APP_ENV], "capacity_provider_name")
+    weight            = 0
+    base              = 1
+  }
 
   ordered_placement_strategy {
     type  = "binpack"
