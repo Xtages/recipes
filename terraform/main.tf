@@ -23,7 +23,7 @@ locals {
   staging_cluster_name = split("/", local.environment.staging.cluster_arn)[1]
 
   # to lower the desired count for staging
-  approx_undeploy_time = timeadd(timestamp(), "65m")
+  approx_undeploy_time = timeadd(timestamp(), "7m")
   min_utc              = formatdate("m", local.approx_undeploy_time)
   hour_utc             = formatdate("h", local.approx_undeploy_time)
   day_utc              = formatdate("DD", local.approx_undeploy_time)
