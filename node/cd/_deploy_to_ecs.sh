@@ -2,7 +2,7 @@
 set -euo pipefail
 
 declare -A buckets
-export buckets=(["production"]="xtages-tfstate-customers" ["development"]="605769209612")
+export buckets=(["production"]="xtages-tfstate" ["development"]="xtages-dev-tfstate")
 
 RECIPES_BASE_PATH="${1}"
 APP_ENV="${2}"
@@ -25,5 +25,6 @@ cd "${RECIPES_BASE_PATH}"/terraform
 # This is a workaround to use variables in the Terraform state file
 # https://github.com/hashicorp/terraform/issues/13022#issuecomment-294262392
 terraform init \
-  -backend-config "bucket=${TF_VAR_BACKEND_BUCKET} key=tfstate/us-east-1/${TF_VAR_ENV}/${TF_VAR_APP_ORG_HASH}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME_HASH}"
+  -backend-config "bucket=${TF_VAR_BACKEND_BUCKET}" \
+  -backend-config "key=tfstate/us-east-1/${TF_VAR_ENV}/${TF_VAR_APP_ORG_HASH}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME_HASH}"
 terraform plan -no-color && terraform apply -auto-approve -no-color

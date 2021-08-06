@@ -1,6 +1,6 @@
 ARG NODE_VERSION=15.13.0
 ARG AWS_ACCOUNT=605769209612
-FROM ${AWS_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com/xtages-build-images/node_ci:${NODE_VERSION}
+FROM ${AWS_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com/node:${NODE_VERSION}
 
 ARG DB_URL
 ARG DB_USER
@@ -14,6 +14,7 @@ ENV PGDATABASE=${DB_NAME}
 ENV PGPASSWORD=${DB_PASS}
 ENV PGPORT=${PGPORT}
 
+RUN adduser -D nodejs-app
 WORKDIR /usr/src/app
 COPY package*.json ./
 
@@ -21,6 +22,4 @@ RUN npm install
 COPY . .
 EXPOSE 3000
 CMD node src/server.js
-
-RUN adduser -D nodejs-app
 USER nodejs-app
