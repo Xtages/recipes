@@ -15,18 +15,18 @@ locals {
       bucket = "xtages-dev-tfstate"
       vpc_id = data.terraform_remote_state.xtages_vpc.outputs.vpc_id
       app_iam_roles_config = {
-        bucket = local.xtages_backends.development.bucket
-        key    = "${local.key_prefix}/iam-apps/terraform.tfstate"
+        bucket = "xtages-dev-tfstate"
+        key    = "tfstate/${var.aws_region}/${var.ENV}/iam-apps/terraform.tfstate"
         region = var.aws_region
       }
       ecs_config = {
-        bucket = local.xtages_backends.development.bucket
-        key    = "${local.key_prefix}/ecs-customer/${var.APP_ENV}/terraform.tfstate"
+        bucket = "xtages-dev-tfstate"
+        key    = "tfstate/${var.aws_region}/${var.ENV}/ecs-customer/${var.APP_ENV}/terraform.tfstate"
         region = var.aws_region
       }
       lbs_config = {
-        bucket = local.xtages_backends.development.bucket
-        key    = "${local.key_prefix}/lbs/terraform.tfstate"
+        bucket = "xtages-dev-tfstate"
+        key    = "tfstate/${var.aws_region}/${var.ENV}/lbs/terraform.tfstate"
         region = var.aws_region
       }
     }
@@ -35,18 +35,18 @@ locals {
       bucket = "xtages-tfstate"
       vpc_id = data.terraform_remote_state.xtages_infra.outputs.vpc_id
       app_iam_roles_config = {
-        bucket = local.xtages_backends.production.bucket
-        key    = "${local.key_prefix}/apps/iam"
+        bucket = "xtages-tfstate"
+        key    = "tfstate/${var.aws_region}/${var.ENV}/apps/iam"
         region = var.aws_region
       }
       ecs_config = {
-        bucket = local.xtages_backends.production.bucket
-        key    = "${local.key_prefix}/ecs/${var.APP_ENV}/customers"
+        bucket = "xtages-tfstate"
+        key    = "tfstate/${var.aws_region}/${var.ENV}/ecs/${var.APP_ENV}/customers"
         region = var.aws_region
       }
       lbs_config = {
-        bucket = local.xtages_backends.production.bucket
-        key    = "${local.key_prefix}/lbs/lb-tfstate"
+        bucket = "xtages-tfstate"
+        key    = "tfstate/${var.aws_region}/${var.ENV}/lbs/lb-tfstate"
         region = var.aws_region
       }
     }

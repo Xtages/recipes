@@ -2,7 +2,7 @@ data "terraform_remote_state" "xtages_infra" {
   count    = var.ENV == "production" ? 1 : 0
   backend = "s3"
   config = {
-    bucket = local.xtages_backends.production.bucket
+    bucket = "xtages-tfstate"
     key    = "tfstate/${var.aws_region}/${var.ENV}"
     region = var.aws_region
   }
@@ -12,7 +12,7 @@ data "terraform_remote_state" "xtages_vpc" {
   count    = var.ENV == "development" ? 1 : 0
   backend = "s3"
   config = {
-    bucket = local.xtages_backends.development.bucket
+    bucket = "xtages-dev-tfstate"
     key    = "tfstate/${var.aws_region}/${var.ENV}/vpc/terraform.tfstate"
     region = var.aws_region
   }
