@@ -27,7 +27,7 @@ resource "aws_appautoscaling_target" "ecs_staging_lower_capacity" {
   count              = var.APP_ENV == "staging" ? 1 : 0
   max_capacity       = 1
   min_capacity       = 0
-  resource_id        = "service/${local.staging_cluster_name}/${aws_ecs_service.xtages_app_service.name}"
+  resource_id        = "service/${local.ecs_cluster_name}/${aws_ecs_service.xtages_app_service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }

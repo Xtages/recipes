@@ -7,20 +7,50 @@ locals {
     environment       = var.APP_ENV
   }
 
-  environment = {
-    staging = {
-      cluster_arn            = data.terraform_remote_state.customer_infra_ecs_staging.outputs.xtages_ecs_cluster_id
-      ecs_iam_role           = data.terraform_remote_state.customer_infra_ecs_staging.outputs.ecs_service_role_arn
-      capacity_provider_name = data.terraform_remote_state.customer_infra_ecs_staging.outputs.ecs_capacity_provider_name
+  ecs_cluster_name = split("/", data.terraform_remote_state.customer_infra_ecs.outputs.xtages_ecs_cluster_id)[1]
+  key_prefix = "tfstate/${var.aws_region}/${var.ENV}"
+  xtages_backends = {
+    development = {
+      domain = "xtages.xyz"
+      bucket = "xtages-dev-tfstate"
+      vpc_id = data.terraform_remote_state.xtages_vpc.outputs.vpc_id
+      app_iam_roles_config = {
+        bucket = local.xtages_backends.development.bucket
+        key    = "${local.key_prefix}/iam-apps/terraform.tfstate"
+        region = var.aws_region
+      }
+      ecs_config = {
+        bucket = local.xtages_backends.development.bucket
+        key    = "${local.key_prefix}/ecs-customer/${var.APP_ENV}/terraform.tfstate"
+        region = var.aws_region
+      }
+      lbs_config = {
+        bucket = local.xtages_backends.development.bucket
+        key    = "${local.key_prefix}/lbs/terraform.tfstate"
+        region = var.aws_region
+      }
     }
     production = {
-      cluster_arn            = data.terraform_remote_state.customer_infra_ecs_production.outputs.xtages_ecs_cluster_id
-      ecs_iam_role           = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_service_role_arn
-      capacity_provider_name = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_capacity_provider_name
+      domain = "xtages.dev"
+      bucket = "xtages-tfstate"
+      vpc_id = data.terraform_remote_state.xtages_infra.outputs.vpc_id
+      app_iam_roles_config = {
+        bucket = local.xtages_backends.production.bucket
+        key    = "${local.key_prefix}/apps/iam"
+        region = var.aws_region
+      }
+      ecs_config = {
+        bucket = local.xtages_backends.production.bucket
+        key    = "${local.key_prefix}/ecs/${var.APP_ENV}/customers"
+        region = var.aws_region
+      }
+      lbs_config = {
+        bucket = local.xtages_backends.production.bucket
+        key    = "${local.key_prefix}/lbs/lb-tfstate"
+        region = var.aws_region
+      }
     }
   }
-
-  staging_cluster_name = split("/", local.environment.staging.cluster_arn)[1]
 
   # to lower the desired count for staging
   approx_undeploy_time = timeadd(timestamp(), "65m")
@@ -39,7 +69,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
 }
 
 resource "aws_route53_record" "app_cname_record" {
-  name            = "${local.app_id}.xtages.dev"
+  name            = "${local.app_id}.${lookup(local.xtages_backends[var.ENV], "domain")}"
   type            = "CNAME"
   zone_id         = data.aws_route53_zone.xtages_zone.zone_id
   ttl             = 60
@@ -81,7 +111,7 @@ resource "aws_lb_listener_rule" "xtages_listener_app_rule" {
 
   condition {
     host_header {
-      values = compact(["${local.app_id}.xtages.dev", var.HOST_HEADER])
+      values = compact(["${local.app_id}.${lookup(local.xtages_backends[var.ENV], "domain")}", var.HOST_HEADER])
     }
   }
 
@@ -107,7 +137,7 @@ resource "aws_lb_target_group" "app_target_group" {
   name                 = local.app_id
   port                 = 80
   protocol             = "HTTP"
-  vpc_id               = data.terraform_remote_state.xtages_infra.outputs.vpc_id
+  vpc_id               = lookup(local.xtages_backends[var.ENV], "vpc_id")
   deregistration_delay = 20
   tags                 = local.tags
 
@@ -127,15 +157,15 @@ resource "aws_lb_target_group" "app_target_group" {
 
 resource "aws_ecs_service" "xtages_app_service" {
   name                = var.APP_NAME_HASH
-  cluster             = lookup(local.environment[var.APP_ENV], "cluster_arn")
+  cluster             = data.terraform_remote_state.customer_infra_ecs.outputs.xtages_ecs_cluster_id
   task_definition     = aws_ecs_task_definition.app_task_definition.arn
   desired_count       = 1
-  iam_role            = lookup(local.environment[var.APP_ENV], "ecs_iam_role")
+  iam_role            = data.terraform_remote_state.customer_infra_ecs.outputs.ecs_service_role_arn
   tags                = local.tags
   scheduling_strategy = "REPLICA"
 
   capacity_provider_strategy {
-    capacity_provider = lookup(local.environment[var.APP_ENV], "capacity_provider_name")
+    capacity_provider = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_capacity_provider_name
     weight            = 1
     base              = 0
   }

@@ -1,50 +1,40 @@
 data "terraform_remote_state" "xtages_infra" {
+  count    = var.ENV == "production" ? 1 : 0
   backend = "s3"
   config = {
-    bucket = "xtages-tfstate"
-    key    = "tfstate/us-east-1/production"
-    region = "us-east-1"
+    bucket = local.xtages_backends.production.bucket
+    key    = "tfstate/${var.aws_region}/${var.ENV}"
+    region = var.aws_region
+  }
+}
+
+data "terraform_remote_state" "xtages_vpc" {
+  count    = var.ENV == "development" ? 1 : 0
+  backend = "s3"
+  config = {
+    bucket = local.xtages_backends.development.bucket
+    key    = "tfstate/${var.aws_region}/${var.ENV}/vpc/terraform.tfstate"
+    region = var.aws_region
   }
 }
 
 data "terraform_remote_state" "apps_iam_roles" {
   backend = "s3"
-  config = {
-    bucket = "xtages-tfstate"
-    key    = "tfstate/us-east-1/production/apps/iam"
-    region = "us-east-1"
-  }
+  config = lookup(local.xtages_backends[var.ENV], "app_iam_roles_config")
 }
 
-data "terraform_remote_state" "customer_infra_ecs_staging" {
+data "terraform_remote_state" "customer_infra_ecs" {
   backend = "s3"
-  config = {
-    bucket = "xtages-tfstate"
-    key    = "tfstate/us-east-1/production/ecs/staging/customers"
-    region = "us-east-1"
-  }
-}
-
-data "terraform_remote_state" "customer_infra_ecs_production" {
-  backend = "s3"
-  config = {
-    bucket = "xtages-tfstate"
-    key    = "tfstate/us-east-1/production/ecs/production/customers"
-    region = "us-east-1"
-  }
+  config = lookup(local.xtages_backends[var.ENV], "ecs_config")
 }
 
 data "terraform_remote_state" "xtages_infra_lbs" {
   backend = "s3"
-  config = {
-    bucket = "xtages-tfstate"
-    key    = "tfstate/us-east-1/production/lbs/lb-tfstate"
-    region = "us-east-1"
-  }
+  config = lookup(local.xtages_backends[var.ENV], "lbs_config")
 }
 
 data "aws_route53_zone" "xtages_zone" {
-  name         = "xtages.dev"
+  name         = lookup(local.xtages_backends[var.ENV], "domain")
   private_zone = false
 }
 
@@ -53,7 +43,7 @@ data "aws_lb" "xtages_customers_lb" {
 }
 
 data "aws_acm_certificate" "xtages_cert" {
-  domain   = "xtages.dev"
+  domain   = lookup(local.xtages_backends[var.ENV], "domain")
   statuses = ["ISSUED"]
 }
 

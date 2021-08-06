@@ -1,5 +1,6 @@
 ARG NODE_VERSION=15.13.0
-FROM 606626603369.dkr.ecr.us-east-1.amazonaws.com/xtages-build-images/node_ci:${NODE_VERSION}
+ARG AWS_ACCOUNT=605769209612
+FROM ${AWS_ACCOUNT}.dkr.ecr.us-east-1.amazonaws.com/xtages-build-images/node_ci:${NODE_VERSION}
 
 ARG DB_URL
 ARG DB_USER
