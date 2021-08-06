@@ -14,7 +14,6 @@ ENV PGDATABASE=${DB_NAME}
 ENV PGPASSWORD=${DB_PASS}
 ENV PGPORT=${PGPORT}
 
-RUN adduser -D nodejs-app
 WORKDIR /usr/src/app
 COPY package*.json ./
 
@@ -22,4 +21,6 @@ RUN npm install
 COPY . .
 EXPOSE 3000
 CMD node src/server.js
+
+RUN adduser -D nodejs-app
 USER nodejs-app
