@@ -18,8 +18,8 @@ cd "${PROJECT_PATH}"
 
 # build docker image and push it to ECR
 # docker login is performed in the buildspec (S3)
-IMAGE_NAME="${environments[$XTAGES_ENV]}.dkr.ecr.us-east-1.amazonaws.com/${XTAGES_PROJECT}:staging-${XTAGES_GH_PROJECT_TAG}"
-docker build --build-arg AWS_ACCOUNT="${environments[$XTAGES_ENV]}" \
+IMAGE_NAME="${environments[${XTAGES_ENV}]}.dkr.ecr.us-east-1.amazonaws.com/${XTAGES_PROJECT}:staging-${XTAGES_GH_PROJECT_TAG}"
+docker build --build-arg AWS_ACCOUNT="${environments[${XTAGES_ENV}]}" \
 --build-arg NODE_VERSION="${XTAGES_NODE_VER}" \
 --build-arg DB_URL="${XTAGES_DB_URL}" \
 --build-arg DB_USER="${XTAGES_DB_USER}" \

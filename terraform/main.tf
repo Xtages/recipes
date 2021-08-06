@@ -13,7 +13,7 @@ locals {
     development = {
       domain = "xtages.xyz"
       bucket = "xtages-dev-tfstate"
-      vpc_id = data.terraform_remote_state.xtages_vpc.outputs.vpc_id
+      vpc_id = data.terraform_remote_state.xtages_vpc == [] ? "" : data.terraform_remote_state.xtages_vpc[0].outputs.vpc_id
       app_iam_roles_config = {
         bucket = "xtages-dev-tfstate"
         key    = "tfstate/${var.aws_region}/${var.ENV}/iam-apps/terraform.tfstate"
@@ -33,7 +33,7 @@ locals {
     production = {
       domain = "xtages.dev"
       bucket = "xtages-tfstate"
-      vpc_id = data.terraform_remote_state.xtages_infra.outputs.vpc_id
+      vpc_id = data.terraform_remote_state.xtages_infra == [] ? "" : data.terraform_remote_state.xtages_infra[0].outputs.vpc_id
       app_iam_roles_config = {
         bucket = "xtages-tfstate"
         key    = "tfstate/${var.aws_region}/${var.ENV}/apps/iam"
@@ -165,7 +165,7 @@ resource "aws_ecs_service" "xtages_app_service" {
   scheduling_strategy = "REPLICA"
 
   capacity_provider_strategy {
-    capacity_provider = data.terraform_remote_state.customer_infra_ecs_production.outputs.ecs_capacity_provider_name
+    capacity_provider = data.terraform_remote_state.customer_infra_ecs.outputs.ecs_capacity_provider_name
     weight            = 1
     base              = 0
   }
