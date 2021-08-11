@@ -1,11 +1,14 @@
 #!/bin/bash
 set -euo pipefail
+declare -A environments
+export environments=(["production"]="606626603369" ["development"]="605769209612")
+
 # this path is inferred from the buildspec file that is in S3 repo tf_live_production
 # assigning variables for paths as they need to be relative to run in CodeBuild
 RECIPES_BASE_PATH="$PWD"
 cd ../project_src
 PROJECT_PATH="$PWD"
-
+AWS_ACCOUNT_ID=${environments[${XTAGES_ENV}]}
 SCRIPT_DIR=$(dirname "${0}")
 
 # copying the Dockerfile to build the image
@@ -15,8 +18,9 @@ cd "${PROJECT_PATH}"
 
 # build docker image and push it to ECR
 # docker login is performed in the buildspec (S3)
-IMAGE_NAME="606626603369.dkr.ecr.us-east-1.amazonaws.com/${XTAGES_PROJECT}:staging-${XTAGES_GH_PROJECT_TAG}"
-docker build --build-arg NODE_VERSION="${XTAGES_NODE_VER}" \
+IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/${XTAGES_PROJECT}:staging-${XTAGES_GH_PROJECT_TAG}"
+docker build --build-arg AWS_ACCOUNT="${AWS_ACCOUNT_ID}" \
+--build-arg NODE_VERSION="${XTAGES_NODE_VER}" \
 --build-arg DB_URL="${XTAGES_DB_URL}" \
 --build-arg DB_USER="${XTAGES_DB_USER}" \
 --build-arg DB_NAME="${XTAGES_DB_NAME}" \
