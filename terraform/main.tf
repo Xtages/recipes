@@ -1,10 +1,11 @@
 locals {
   app_id = "${var.APP_ENV}-${substr(var.APP_NAME_HASH, 0, 12)}"
   tags = {
-    application       = var.APP_NAME_HASH,
-    organization      = var.APP_ORG,
+    application       = var.APP_NAME_HASH
+    organization      = var.APP_ORG
     organization-hash = var.APP_ORG_HASH
     environment       = var.APP_ENV
+    build_id          = var.APP_BUILD_ID
   }
 
   ecs_cluster_name = split("/", data.terraform_remote_state.customer_infra_ecs.outputs.xtages_ecs_cluster_id)[1]
@@ -53,7 +54,7 @@ locals {
   }
 
   # to lower the desired count for staging
-  approx_undeploy_time = timeadd(timestamp(), "65m")
+  approx_undeploy_time = timeadd(timestamp(), "5m")
   min_utc              = formatdate("m", local.approx_undeploy_time)
   hour_utc             = formatdate("h", local.approx_undeploy_time)
   day_utc              = formatdate("DD", local.approx_undeploy_time)
