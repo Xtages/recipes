@@ -48,7 +48,7 @@ data "aws_acm_certificate" "xtages_cert" {
 }
 
 data "aws_acm_certificate" "customer_cer" {
-  count    = var.CUSTOMER_DOMAIN != "" ? 1 : 0
+  count    = var.CUSTOMER_DOMAIN != "" && var.APP_ENV == "production" ? 1 : 0
   domain   = var.CUSTOMER_DOMAIN
   statuses = ["ISSUED"]
 }

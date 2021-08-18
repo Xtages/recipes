@@ -5,7 +5,6 @@ locals {
     organization      = var.APP_ORG
     organization-hash = var.APP_ORG_HASH
     environment       = var.APP_ENV
-    build_id          = var.APP_BUILD_ID
   }
 
   ecs_cluster_name = split("/", data.terraform_remote_state.customer_infra_ecs.outputs.xtages_ecs_cluster_id)[1]
@@ -97,7 +96,7 @@ resource "aws_lb_listener" "xtages_service_secure" {
 }
 
 resource "aws_lb_listener_certificate" "customer_cert_listener" {
-  count           = var.CUSTOMER_DOMAIN != "" ? 1 : 0
+  count           = var.CUSTOMER_DOMAIN != "" && var.APP_ENV == "production" ? 1 : 0
   certificate_arn = data.aws_acm_certificate.customer_cer[0].arn
   listener_arn    = aws_lb_listener.xtages_service_secure.arn
 }
@@ -162,7 +161,7 @@ resource "aws_ecs_service" "xtages_app_service" {
   task_definition     = aws_ecs_task_definition.app_task_definition.arn
   desired_count       = 1
   iam_role            = data.terraform_remote_state.customer_infra_ecs.outputs.ecs_service_role_arn
-  tags                = local.tags
+  tags                = merge(local.tags, {build_id  = var.APP_BUILD_ID})
   scheduling_strategy = "REPLICA"
 
   capacity_provider_strategy {
