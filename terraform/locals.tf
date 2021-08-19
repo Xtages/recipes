@@ -8,11 +8,13 @@ locals {
   }
 
 
-  staging = {
-    host_header = ""
-  }
-  production = {
-    host_header = var.HOST_HEADER
+  app_env_vars = {
+    staging = {
+      host_header = ""
+    }
+    production = {
+      host_header = var.HOST_HEADER
+    }
   }
 
 
@@ -22,7 +24,6 @@ locals {
   xtages_backends = {
     development = {
       domain = "xtages.xyz"
-      host_header = "${var.APP_ENV}-${substr(var.APP_NAME_HASH, 0, 12)}.xtages.xyz"
       bucket = "xtages-dev-tfstate"
       vpc_id = data.terraform_remote_state.xtages_vpc == [] ? "" : data.terraform_remote_state.xtages_vpc[0].outputs.vpc_id
       app_iam_roles_config = {
@@ -43,7 +44,6 @@ locals {
     }
     production = {
       domain = "xtages.dev"
-      host_header =
       bucket = "xtages-tfstate"
       vpc_id = data.terraform_remote_state.xtages_infra == [] ? "" : data.terraform_remote_state.xtages_infra[0].outputs.vpc_id
       app_iam_roles_config = {
