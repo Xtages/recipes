@@ -7,12 +7,22 @@ locals {
     environment       = var.APP_ENV
   }
 
+
+  staging = {
+    host_header = ""
+  }
+  production = {
+    host_header = var.HOST_HEADER
+  }
+
+
   ecs_cluster_name = split("/", data.terraform_remote_state.customer_infra_ecs.outputs.xtages_ecs_cluster_id)[1]
   key_prefix = "tfstate/${var.aws_region}/${var.ENV}"
+
   xtages_backends = {
     development = {
       domain = "xtages.xyz"
-      host_header = ["${var.APP_ENV}-${substr(var.APP_NAME_HASH, 0, 12)}.xtages.xyz"]
+      host_header = "${var.APP_ENV}-${substr(var.APP_NAME_HASH, 0, 12)}.xtages.xyz"
       bucket = "xtages-dev-tfstate"
       vpc_id = data.terraform_remote_state.xtages_vpc == [] ? "" : data.terraform_remote_state.xtages_vpc[0].outputs.vpc_id
       app_iam_roles_config = {
@@ -33,7 +43,7 @@ locals {
     }
     production = {
       domain = "xtages.dev"
-      host_header = compact(["${var.APP_ENV}-${substr(var.APP_NAME_HASH, 0, 12)}.xtages.dev"], var.HOST_HEADER)
+      host_header =
       bucket = "xtages-tfstate"
       vpc_id = data.terraform_remote_state.xtages_infra == [] ? "" : data.terraform_remote_state.xtages_infra[0].outputs.vpc_id
       app_iam_roles_config = {

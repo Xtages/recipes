@@ -48,7 +48,8 @@ resource "aws_lb_listener_rule" "xtages_listener_app_rule" {
 
   condition {
     host_header {
-        values = lookup(local.xtages_backends[var.ENV], "host_header")
+        // This is to build the domain based on the AWS account and to get the host header based on the app environment
+        values = compact(["${local.app_id}.${lookup(local.xtages_backends[var.ENV], "domain")}", lookup(lookup(local, var.APP_ENV),"host_header")])
     }
   }
 
