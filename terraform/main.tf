@@ -1,67 +1,3 @@
-locals {
-  app_id = "${var.APP_ENV}-${substr(var.APP_NAME_HASH, 0, 12)}"
-  tags = {
-    application       = var.APP_NAME_HASH
-    organization      = var.APP_ORG
-    organization-hash = var.APP_ORG_HASH
-    environment       = var.APP_ENV
-    build_id          = var.APP_BUILD_ID
-  }
-
-  ecs_cluster_name = split("/", data.terraform_remote_state.customer_infra_ecs.outputs.xtages_ecs_cluster_id)[1]
-  key_prefix = "tfstate/${var.aws_region}/${var.ENV}"
-  xtages_backends = {
-    development = {
-      domain = "xtages.xyz"
-      bucket = "xtages-dev-tfstate"
-      vpc_id = data.terraform_remote_state.xtages_vpc == [] ? "" : data.terraform_remote_state.xtages_vpc[0].outputs.vpc_id
-      app_iam_roles_config = {
-        bucket = "xtages-dev-tfstate"
-        key    = "tfstate/${var.aws_region}/${var.ENV}/iam-apps/terraform.tfstate"
-        region = var.aws_region
-      }
-      ecs_config = {
-        bucket = "xtages-dev-tfstate"
-        key    = "tfstate/${var.aws_region}/${var.ENV}/ecs-customer/${var.APP_ENV}/terraform.tfstate"
-        region = var.aws_region
-      }
-      lbs_config = {
-        bucket = "xtages-dev-tfstate"
-        key    = "tfstate/${var.aws_region}/${var.ENV}/lbs/terraform.tfstate"
-        region = var.aws_region
-      }
-    }
-    production = {
-      domain = "xtages.dev"
-      bucket = "xtages-tfstate"
-      vpc_id = data.terraform_remote_state.xtages_infra == [] ? "" : data.terraform_remote_state.xtages_infra[0].outputs.vpc_id
-      app_iam_roles_config = {
-        bucket = "xtages-tfstate"
-        key    = "tfstate/${var.aws_region}/${var.ENV}/apps/iam"
-        region = var.aws_region
-      }
-      ecs_config = {
-        bucket = "xtages-tfstate"
-        key    = "tfstate/${var.aws_region}/${var.ENV}/ecs/${var.APP_ENV}/customers"
-        region = var.aws_region
-      }
-      lbs_config = {
-        bucket = "xtages-tfstate"
-        key    = "tfstate/${var.aws_region}/${var.ENV}/lbs/lb-tfstate"
-        region = var.aws_region
-      }
-    }
-  }
-
-  # to lower the desired count for staging
-  approx_undeploy_time = timeadd(timestamp(), "65m")
-  min_utc              = formatdate("m", local.approx_undeploy_time)
-  hour_utc             = formatdate("h", local.approx_undeploy_time)
-  day_utc              = formatdate("DD", local.approx_undeploy_time)
-  month_utc            = formatdate("MM", local.approx_undeploy_time)
-  year_utc             = formatdate("YYYY", local.approx_undeploy_time)
-}
-
 resource "aws_ecs_task_definition" "app_task_definition" {
   family                = local.app_id
   container_definitions = data.template_file.app_task_definition.rendered
@@ -97,7 +33,7 @@ resource "aws_lb_listener" "xtages_service_secure" {
 }
 
 resource "aws_lb_listener_certificate" "customer_cert_listener" {
-  count           = var.CUSTOMER_DOMAIN != "" ? 1 : 0
+  count           = var.CUSTOMER_DOMAIN != "" && var.APP_ENV == "production" ? 1 : 0
   certificate_arn = data.aws_acm_certificate.customer_cer[0].arn
   listener_arn    = aws_lb_listener.xtages_service_secure.arn
 }
@@ -112,7 +48,8 @@ resource "aws_lb_listener_rule" "xtages_listener_app_rule" {
 
   condition {
     host_header {
-      values = compact(["${local.app_id}.${lookup(local.xtages_backends[var.ENV], "domain")}", var.HOST_HEADER])
+        // This is to build the domain based on the AWS account and to get the host header based on the app environment
+        values = compact(["${local.app_id}.${lookup(local.xtages_backends[var.ENV], "domain")}", lookup(lookup(local.app_env_vars, var.APP_ENV),"host_header")])
     }
   }
 
@@ -162,7 +99,7 @@ resource "aws_ecs_service" "xtages_app_service" {
   task_definition     = aws_ecs_task_definition.app_task_definition.arn
   desired_count       = 1
   iam_role            = data.terraform_remote_state.customer_infra_ecs.outputs.ecs_service_role_arn
-  tags                = local.tags
+  tags                = merge(local.tags, {build_id  = var.APP_BUILD_ID})
   scheduling_strategy = "REPLICA"
 
   capacity_provider_strategy {
