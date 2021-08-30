@@ -4,9 +4,11 @@ set -euo pipefail
 declare -A buckets
 export buckets=(["production"]="xtages-tfstate-customers" ["development"]="xtages-tfstate-customers-development")
 
+SCRIPT_DIR=$(dirname "${0}")
 RECIPES_BASE_PATH="${1}"
 APP_ENV="${2}"
 SHORT_COMMIT="${3}"
+SCRIPTS_PATH="${RECIPES_BASE_PATH}/${SCRIPT_DIR}"
 
 # deploy to ECS with Terraform
 # env variables used by Terraform
@@ -22,9 +24,18 @@ export TF_VAR_ENV="${XTAGES_ENV}"
 export TF_VAR_BACKEND_BUCKET="${buckets[${XTAGES_ENV}]}"
 
 cd "${RECIPES_BASE_PATH}"/terraform
+sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "init=start"
 # This is a workaround to use variables in the Terraform state file
 # https://github.com/hashicorp/terraform/issues/13022#issuecomment-294262392
 terraform init -no-color \
   -backend-config "bucket=${TF_VAR_BACKEND_BUCKET}" \
-  -backend-config "key=tfstate/us-east-1/${TF_VAR_ENV}/${TF_VAR_APP_ORG_HASH}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME_HASH}"
-terraform plan -no-color && terraform apply -auto-approve -no-color
+  -backend-config "key=tfstate/us-east-1/${TF_VAR_ENV}/${TF_VAR_APP_ORG_HASH}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME_HASH}" > terraform.log
+sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "init=finish"
+
+sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "plan=start"
+terraform plan -no-color >> terraform.log
+sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "plan=finish"
+
+sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "apply=start"
+terraform apply -auto-approve -no-color >> terraform.log
+sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "apply=finish"
