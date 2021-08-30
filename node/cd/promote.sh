@@ -16,4 +16,9 @@ sh -x "${SCRIPTS_PATH}"/_re_tag_image.sh "${STAGING_IMAGE_TAG}" "${PRODUCTION_IM
 # deploy to ECS with Terraform
 # the promote script always targets "production"
 sh -x "${SCRIPTS_PATH}"/_deploy_to_ecs.sh "${RECIPES_BASE_PATH}" "production" "${XTAGES_GH_PROJECT_TAG}"
-sh -x "${SCRIPTS_PATH}"/upload_logs.sh
+
+trap 'send_logs $?' EXIT
+
+send_logs() {
+  sh -x "${SCRIPTS_PATH}"/upload_logs.sh "$1"
+}

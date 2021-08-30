@@ -7,6 +7,11 @@ SCRIPT_DIR=$(dirname "${0}")
 # path for scripts
 SCRIPTS_PATH="${RECIPES_BASE_PATH}/${SCRIPT_DIR}"
 
+trap 'send_logs $?' EXIT
+
 # deploy to ECS with Terraform
 sh -x "${SCRIPTS_PATH}"/_deploy_to_ecs.sh "${RECIPES_BASE_PATH}" "production" "${XTAGES_PREVIOUS_GH_PROJECT_TAG}"
-sh -x "${SCRIPTS_PATH}"/upload_logs.sh
+
+send_logs() {
+  sh -x "${SCRIPTS_PATH}"/upload_logs.sh "$1"
+}

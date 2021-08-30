@@ -8,7 +8,6 @@ SCRIPT_DIR=$(dirname "${0}")
 RECIPES_BASE_PATH="${1}"
 APP_ENV="${2}"
 SHORT_COMMIT="${3}"
-SCRIPTS_PATH="${RECIPES_BASE_PATH}/${SCRIPT_DIR}"
 
 # deploy to ECS with Terraform
 # env variables used by Terraform
@@ -29,13 +28,13 @@ sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "init=start"
 # https://github.com/hashicorp/terraform/issues/13022#issuecomment-294262392
 terraform init -no-color \
   -backend-config "bucket=${TF_VAR_BACKEND_BUCKET}" \
-  -backend-config "key=tfstate/us-east-1/${TF_VAR_ENV}/${TF_VAR_APP_ORG_HASH}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME_HASH}" > terraform.log
-sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "init=finish"
+  -backend-config "key=tfstate/us-east-1/${TF_VAR_ENV}/${TF_VAR_APP_ORG_HASH}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME_HASH}" > "${SCRIPT_DIR}"/terraform.log
+sh -x "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "init=finish"
 
-sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "plan=start"
-terraform plan -no-color >> terraform.log
-sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "plan=finish"
+sh -x "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "plan=start"
+terraform plan -no-color >> "${SCRIPT_DIR}"/terraform.log
+sh -x "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "plan=finish"
 
-sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "apply=start"
-terraform apply -auto-approve -no-color >> terraform.log
-sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "apply=finish"
+sh -x "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "apply=start"
+terraform apply -auto-approve -no-color >> "${SCRIPT_DIR}"/terraform.log
+sh -x "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "apply=finish"
