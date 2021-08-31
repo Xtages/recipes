@@ -13,12 +13,13 @@ PRODUCTION_IMAGE_TAG="production-${XTAGES_GH_PROJECT_TAG}"
 send_logs() {
   sh "${SCRIPTS_PATH}"/upload_logs.sh "$1"
 }
+trap 'send_logs $?' EXIT
 
+echo "########### Preparing application for Production ###########"
 # re-tag the staging image to prod
-sh "${SCRIPTS_PATH}"/_re_tag_image.sh "${STAGING_IMAGE_TAG}" "${PRODUCTION_IMAGE_TAG}"
+sh -x "${SCRIPTS_PATH}"/_re_tag_image.sh "${STAGING_IMAGE_TAG}" "${PRODUCTION_IMAGE_TAG}"
 
+echo "########### Deploying application to Production ###########"
 # deploy to ECS with Terraform
 # the promote script always targets "production"
-sh "${SCRIPTS_PATH}"/_deploy_to_ecs.sh "${RECIPES_BASE_PATH}" "production" "${XTAGES_GH_PROJECT_TAG}"
-
-trap 'send_logs $?' EXIT
+sh -x "${SCRIPTS_PATH}"/_deploy_to_ecs.sh "${RECIPES_BASE_PATH}" "production" "${XTAGES_GH_PROJECT_TAG}"

@@ -37,12 +37,12 @@ docker build --build-arg AWS_ACCOUNT="${AWS_ACCOUNT_ID}" \
   --build-arg DB_NAME="${XTAGES_DB_NAME}" \
   --build-arg DB_PASS="${XTAGES_DB_PASS}"  \
   --tag "${IMAGE_NAME}" . 2>&1 | tee "${SCRIPTS_PATH}"/docker.log \
-  || sh "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "command=build,status=$?"
+  || sh "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "command=build"
 
 echo "########### Uploading Image to Xtages Registry ###########"
 sh "${SCRIPTS_PATH}"/metrics.sh "docker" "0" "command=push"
 docker push "${IMAGE_NAME}" >> "${SCRIPTS_PATH}"/docker.log 2>&1 \
-  || sh "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "command=push,status=$?"
+  || sh "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "command=push"
 
 
 echo "########### Deploying to Xtages Platform ###########"

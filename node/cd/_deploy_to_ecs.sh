@@ -30,12 +30,12 @@ terraform init -no-color \
   -backend-config "bucket=${TF_VAR_BACKEND_BUCKET}" \
   -backend-config "key=tfstate/us-east-1/${TF_VAR_ENV}/${TF_VAR_APP_ORG_HASH}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME_HASH}" \
    > "${SCRIPT_DIR}"/terraform.log 2>&1 \
-  || sh "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "command=init,status=$?"
+  || sh "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "command=init"
 
 sh "${SCRIPT_DIR}"/metrics.sh "terraform" "0" "command=plan"
 terraform plan -no-color >> "${SCRIPT_DIR}"/terraform.log 2>&1 \
-  || sh "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "command=plan,status=$?"
+  || sh "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "command=plan"
 
 sh "${SCRIPT_DIR}"/metrics.sh "terraform" "0" "command=apply"
 terraform apply -auto-approve -no-color >> "${SCRIPT_DIR}"/terraform.log 2>&1 \
-  || sh "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "command=apply,status=$?"
+  || sh "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "command=apply"
