@@ -31,6 +31,7 @@ trap 'send_logs $?' EXIT
 # docker login is performed in the buildspec (S3)
 sh -x "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "build=start"
 IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/${XTAGES_PROJECT}:staging-${XTAGES_GH_PROJECT_TAG}"
+echo "########### Building Application Code ###########"
 docker build --build-arg AWS_ACCOUNT="${AWS_ACCOUNT_ID}" \
 --build-arg NODE_VERSION="${XTAGES_NODE_VER}" \
 --build-arg DB_URL="${XTAGES_DB_URL}" \
@@ -39,11 +40,12 @@ docker build --build-arg AWS_ACCOUNT="${AWS_ACCOUNT_ID}" \
 --build-arg DB_PASS="${XTAGES_DB_PASS}"  \
 --tag "${IMAGE_NAME}" . 2>&1 | tee "${SCRIPTS_PATH}"/docker.log
 sh -x "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "build=finish"
-
+echo "########### Uploading Image to Xtages Registry ###########"
 sh -x "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "push=start"
-docker push "${IMAGE_NAME}" 2>&1 >> "${SCRIPTS_PATH}"/docker.log
+docker push "${IMAGE_NAME}" >> "${SCRIPTS_PATH}"/docker.log 2>&1
 sh -x "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "push=finish"
 
+echo "########### Deploying to Xtages Platform ###########"
 # deploy to ECS with Terraform
 # the deploy script always targets "staging"
 sh -x "${SCRIPTS_PATH}"/_deploy_to_ecs.sh "${RECIPES_BASE_PATH}" "staging" "${XTAGES_GH_PROJECT_TAG}"

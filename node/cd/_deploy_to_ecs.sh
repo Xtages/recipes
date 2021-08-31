@@ -28,13 +28,13 @@ sh -x "${SCRIPTS_PATH}"/metrics.sh "terraform" "1" "init=start"
 # https://github.com/hashicorp/terraform/issues/13022#issuecomment-294262392
 terraform init -no-color \
   -backend-config "bucket=${TF_VAR_BACKEND_BUCKET}" \
-  -backend-config "key=tfstate/us-east-1/${TF_VAR_ENV}/${TF_VAR_APP_ORG_HASH}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME_HASH}" > "${SCRIPT_DIR}"/terraform.log
+  -backend-config "key=tfstate/us-east-1/${TF_VAR_ENV}/${TF_VAR_APP_ORG_HASH}/${TF_VAR_APP_ENV}/app/${TF_VAR_APP_NAME_HASH}" > "${SCRIPT_DIR}"/terraform.log 2>&1
 sh -x "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "init=finish"
 
 sh -x "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "plan=start"
-terraform plan -no-color >> "${SCRIPT_DIR}"/terraform.log
+terraform plan -no-color >> "${SCRIPT_DIR}"/terraform.log 2>&1
 sh -x "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "plan=finish"
 
 sh -x "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "apply=start"
-terraform apply -auto-approve -no-color >> "${SCRIPT_DIR}"/terraform.log
+terraform apply -auto-approve -no-color >> "${SCRIPT_DIR}"/terraform.log 2>&1
 sh -x "${SCRIPT_DIR}"/metrics.sh "terraform" "1" "apply=finish"
