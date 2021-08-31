@@ -11,7 +11,7 @@ STAGING_IMAGE_TAG="staging-${XTAGES_GH_PROJECT_TAG}"
 PRODUCTION_IMAGE_TAG="production-${XTAGES_GH_PROJECT_TAG}"
 
 send_logs() {
-  sh "${SCRIPTS_PATH}"/upload_logs.sh "$1"
+  sh -x "${SCRIPTS_PATH}"/upload_logs.sh "$1"
 }
 trap 'send_logs $?' EXIT
 
