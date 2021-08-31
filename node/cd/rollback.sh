@@ -8,7 +8,7 @@ SCRIPT_DIR=$(dirname "${0}")
 SCRIPTS_PATH="${RECIPES_BASE_PATH}/${SCRIPT_DIR}"
 
 send_logs() {
-  sh "${SCRIPTS_PATH}"/upload_logs.sh "$1"
+  sh "${SCRIPTS_PATH}"/upload_logs.sh "${SCRIPTS_PATH}" "$1"
 }
 
 trap 'send_logs $?' EXIT

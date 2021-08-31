@@ -27,7 +27,7 @@ trap 'send_logs $?' EXIT
 
 # build docker image and push it to ECR
 # docker login is performed in the buildspec (S3)
-sh "${SCRIPTS_PATH}"/metrics.sh "docker" "0" "command=build"
+#sh "${SCRIPTS_PATH}"/metrics.sh "docker" "0" "command=build"
 IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/${XTAGES_PROJECT}:staging-${XTAGES_GH_PROJECT_TAG}"
 echo "########### Building Application Code ###########"
 docker build --build-arg AWS_ACCOUNT="${AWS_ACCOUNT_ID}" \
@@ -36,13 +36,13 @@ docker build --build-arg AWS_ACCOUNT="${AWS_ACCOUNT_ID}" \
   --build-arg DB_USER="${XTAGES_DB_USER}" \
   --build-arg DB_NAME="${XTAGES_DB_NAME}" \
   --build-arg DB_PASS="${XTAGES_DB_PASS}"  \
-  --tag "${IMAGE_NAME}" . 2>&1 | tee "${SCRIPTS_PATH}"/docker.log \
-  || sh "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "command=build"
+  --tag "${IMAGE_NAME}" . 2>&1 | tee "${SCRIPTS_PATH}"/docker.log
+#  || sh "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "command=build"
 
 echo "########### Uploading Image to Xtages Registry ###########"
-sh "${SCRIPTS_PATH}"/metrics.sh "docker" "0" "command=push"
-docker push "${IMAGE_NAME}" >> "${SCRIPTS_PATH}"/docker.log 2>&1 \
-  || sh "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "command=push"
+# sh "${SCRIPTS_PATH}"/metrics.sh "docker" "0" "command=push"
+docker push "${IMAGE_NAME}" >> "${SCRIPTS_PATH}"/docker.log 2>&1
+#  || sh "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "command=push"
 
 
 echo "########### Deploying to Xtages Platform ###########"
