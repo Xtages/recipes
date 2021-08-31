@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
+
 declare -A environments
 export environments=(["production"]="606626603369" ["development"]="605769209612")
-
 my_dir="$(dirname "$0")"
 
 # this path is inferred from the buildspec file that is in S3 repo tf_live_production
@@ -14,6 +14,10 @@ AWS_ACCOUNT_ID=${environments[${XTAGES_ENV}]}
 SCRIPT_DIR=$(dirname "${0}")
 # path for scripts
 SCRIPTS_PATH="${RECIPES_BASE_PATH}/${SCRIPT_DIR}"
+
+send_logs() {
+  sh -x "${SCRIPTS_PATH}"/upload_logs.sh "${SCRIPTS_PATH}" "$1"
+}
 
 # copying the Dockerfile to build the image
 cp "${RECIPES_BASE_PATH}/${XTAGES_PROJECT_TYPE}/cd/Dockerfile" "${PROJECT_PATH}"
@@ -33,17 +37,13 @@ docker build --build-arg AWS_ACCOUNT="${AWS_ACCOUNT_ID}" \
 --build-arg DB_USER="${XTAGES_DB_USER}" \
 --build-arg DB_NAME="${XTAGES_DB_NAME}" \
 --build-arg DB_PASS="${XTAGES_DB_PASS}"  \
---tag "${IMAGE_NAME}" . 2>&1 | tee "${SCRIPT_DIR}"/docker.log
+--tag "${IMAGE_NAME}" . 2>&1 | tee "${SCRIPTS_PATH}"/docker.log
 sh -x "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "build=finish"
 
 sh -x "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "push=start"
-docker push "${IMAGE_NAME}" 2>&1 | tee -a "${SCRIPT_DIR}"/docker.log
+docker push "${IMAGE_NAME}" 2>&1 >> "${SCRIPTS_PATH}"/docker.log
 sh -x "${SCRIPTS_PATH}"/metrics.sh "docker" "1" "push=finish"
 
 # deploy to ECS with Terraform
 # the deploy script always targets "staging"
 sh -x "${SCRIPTS_PATH}"/_deploy_to_ecs.sh "${RECIPES_BASE_PATH}" "staging" "${XTAGES_GH_PROJECT_TAG}"
-
-send_logs() {
-  sh -x "${SCRIPTS_PATH}"/upload_logs.sh "$1"
-}
