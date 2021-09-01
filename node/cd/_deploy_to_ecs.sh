@@ -2,7 +2,7 @@
 set -euo pipefail
 
 declare -A buckets
-export buckets=(["production"]="xtages-tfstate" ["development"]="xtages-dev-tfstate")
+export buckets=(["production"]="xtages-tfstate-customers" ["development"]="xtages-tfstate-customers-development")
 
 RECIPES_BASE_PATH="${1}"
 APP_ENV="${2}"
