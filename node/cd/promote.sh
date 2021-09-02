@@ -10,14 +10,21 @@ SCRIPTS_PATH="${RECIPES_BASE_PATH}/${SCRIPT_DIR}"
 STAGING_IMAGE_TAG="staging-${XTAGES_GH_PROJECT_TAG}"
 PRODUCTION_IMAGE_TAG="production-${XTAGES_GH_PROJECT_TAG}"
 
+check_prod_ecr_img() {
+  aws ecr describe-images --repository-name "${XTAGES_PROJECT}" --image-ids imageTag="${PRODUCTION_IMAGE_TAG}" > /dev/null 2>&1
+}
+
 send_logs() {
   sh "${SCRIPTS_PATH}"/upload_logs.sh "${SCRIPTS_PATH}" "$1"
 }
 trap 'send_logs $?' EXIT
 
+# check if the prod image already exist
 echo "########### Preparing application for Production ###########"
-# re-tag the staging image to prod
-sh "${SCRIPTS_PATH}"/_re_tag_image.sh "${STAGING_IMAGE_TAG}" "${PRODUCTION_IMAGE_TAG}"
+if ! check_prod_ecr_img; then
+  # re-tag the staging image to prod
+  sh "${SCRIPTS_PATH}"/_re_tag_image.sh "${STAGING_IMAGE_TAG}" "${PRODUCTION_IMAGE_TAG}"
+fi
 
 echo "########### Deploying to Xtages Cloud ###########"
 # deploy to ECS with Terraform
