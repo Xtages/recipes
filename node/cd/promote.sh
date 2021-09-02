@@ -15,9 +15,13 @@ send_logs() {
 }
 trap 'send_logs $?' EXIT
 
+# check if the prod image already exist
 echo "########### Preparing application for Production ###########"
-# re-tag the staging image to prod
-sh "${SCRIPTS_PATH}"/_re_tag_image.sh "${STAGING_IMAGE_TAG}" "${PRODUCTION_IMAGE_TAG}"
+aws ecr describe-images --repository-name "${XTAGES_PROJECT}" --image-ids imageTag="${PRODUCTION_IMAGE_TAG}" 2>&1 > /dev/null
+if [ $? -ne 254 ]; then
+  # re-tag the staging image to prod
+  sh "${SCRIPTS_PATH}"/_re_tag_image.sh "${STAGING_IMAGE_TAG}" "${PRODUCTION_IMAGE_TAG}"
+fi
 
 echo "########### Deploying to Xtages Cloud ###########"
 # deploy to ECS with Terraform
