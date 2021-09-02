@@ -72,5 +72,8 @@ data "template_file" "app_task_definition" {
     APP_ORG_HASH         = var.APP_ORG_HASH
     APP_ENV              = var.APP_ENV
     APP_BUILD_ID         = var.APP_BUILD_ID
+    VCPU                 = lookup(local.xtages_backends[var.ENV], "td_vcpu")
+    MEM                  = lookup(local.xtages_backends[var.ENV], "td_memory")
+    NGINX_MEM_VCPU       = var.ENV == "production" ? 512 : 256
   }
 }
