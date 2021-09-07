@@ -25,6 +25,10 @@ locals {
     development = {
       domain = "xtages.xyz"
       bucket = "xtages-dev-tfstate"
+      app_td_vcpu = 1792
+      app_td_mem = 3072
+      nginx_td_vcpu = 256
+      nginx_td_mem = 256
       vpc_id = data.terraform_remote_state.xtages_vpc == [] ? "" : data.terraform_remote_state.xtages_vpc[0].outputs.vpc_id
       app_iam_roles_config = {
         bucket = "xtages-dev-tfstate"
@@ -45,6 +49,10 @@ locals {
     production = {
       domain = "xtages.dev"
       bucket = "xtages-tfstate"
+      app_td_vcpu = 2048
+      app_td_mem = 4096
+      nginx_td_vcpu = 512
+      nginx_td_mem = 512
       vpc_id = data.terraform_remote_state.xtages_infra == [] ? "" : data.terraform_remote_state.xtages_infra[0].outputs.vpc_id
       app_iam_roles_config = {
         bucket = "xtages-tfstate"
