@@ -1,9 +1,9 @@
 [
     {
         "essential": true,
-        "memory": "${APP_VCPU}",
+        "memory": ${APP_VCPU},
         "name": "${APP_NAME}",
-        "cpu": "${APP_MEM}",
+        "cpu": ${APP_MEM},
         "image": "${APP_REPOSITORY_URL}:${APP_TAG}",
         "workingDirectory": "/",
         "command": ["node", "/usr/src/app/src/server.js"],
@@ -19,8 +19,8 @@
     {
         "name": "nginx",
         "image": "${NGINX_REPOSITORY_URL}:${NGINX_TAG}",
-        "memory": "${NGINX_MEM}",
-        "cpu": "${NGINX_VCPU}",
+        "memory": ${NGINX_MEM},
+        "cpu": ${NGINX_VCPU},
         "essential": true,
         "portMappings": [
             {
