@@ -1,7 +1,7 @@
 [
     {
         "essential": true,
-        "memory": "${APP_VPCU}",
+        "memory": "${APP_VCPU}",
         "name": "${APP_NAME}",
         "cpu": "${APP_MEM}",
         "image": "${APP_REPOSITORY_URL}:${APP_TAG}",
