@@ -1,9 +1,9 @@
 [
     {
         "essential": true,
-        "memory": ${APP_VCPU},
+        "memory": ${APP_MEM},
         "name": "${APP_NAME}",
-        "cpu": ${APP_MEM},
+        "cpu": ${APP_VCPU},
         "image": "${APP_REPOSITORY_URL}:${APP_TAG}",
         "workingDirectory": "/",
         "command": ["node", "/usr/src/app/src/server.js"],
