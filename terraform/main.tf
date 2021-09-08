@@ -113,9 +113,15 @@ resource "aws_ecs_service" "xtages_app_service" {
     field = "cpu"
   }
 
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = false
+  }
+
   load_balancer {
     target_group_arn = aws_lb_target_group.app_target_group.id
     container_name   = "nginx"
     container_port   = 1800
   }
+
 }
