@@ -115,7 +115,7 @@ resource "aws_ecs_service" "xtages_app_service" {
 
   deployment_circuit_breaker {
     enable   = true
-    rollback = true
+    rollback = false
   }
 
   load_balancer {
