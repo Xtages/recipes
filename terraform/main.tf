@@ -3,6 +3,21 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   container_definitions = data.template_file.app_task_definition.rendered
   task_role_arn         = data.terraform_remote_state.apps_iam_roles.outputs.apps_iam_role_arn
   tags                  = local.tags
+  volume {
+    name      = "rexray-vol"
+    docker_volume_configuration {
+      scope = "shared"
+      autoprovision = true
+      driver = "rexray/ebs"
+      driver_opts = {
+          volumetype = "gp2"
+          size = 5
+      }
+      labels = {
+         Name = "postgres"
+      }
+    }
+  }
 }
 
 resource "aws_route53_record" "app_cname_record" {
