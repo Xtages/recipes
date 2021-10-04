@@ -3,6 +3,10 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   container_definitions = data.template_file.app_task_definition.rendered
   task_role_arn         = data.terraform_remote_state.apps_iam_roles.outputs.apps_iam_role_arn
   tags                  = local.tags
+  placement_constraints {
+    type       = "memberOf"
+    expression = "attribute:ecs.availability-zone == us-east-1c"
+  }
   volume {
     name      = "rexray-vol"
     docker_volume_configuration {
