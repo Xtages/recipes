@@ -21,17 +21,21 @@
         "memory": 512,
         "name": "postgres",
         "cpu": 512,
-        "image": "605769209612.dkr.ecr.us-east-1.amazonaws.com/postgresql:13.4.0",
+        "image": "605769209612.dkr.ecr.us-east-1.amazonaws.com/postgresql:13.4-alpine",
         "environment": [
             {
-                "name": "POSTGRESQL_PASSWORD",
+                "name": "POSTGRES_PASSWORD",
                 "value": "1234567890"
+            },
+            {
+                "name": "PGDATA",
+                "value": "/var/lib/postgresql/data/pgdata"
             }
         ],
         "mountPoints": [
             {
                 "sourceVolume": "rexray-vol",
-                "containerPath": "/bitnami/postgresql"
+                "containerPath": "/var/lib/postgresql/data"
             }
         ],
         "logConfiguration": {
