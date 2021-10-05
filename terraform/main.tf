@@ -16,6 +16,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
       driver_opts = {
           volumetype = "gp2"
           size = 5
+          o = "uid=1001"
       }
       labels = {
          Name = "postgres"
