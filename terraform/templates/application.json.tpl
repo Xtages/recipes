@@ -31,7 +31,7 @@
         "mountPoints": [
             {
                 "sourceVolume": "rexray-vol",
-                "containerPath": "/var/lib/postgresql/data"
+                "containerPath": "/bitnami/postgresql/data"
             }
         ],
         "logConfiguration": {
