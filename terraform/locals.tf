@@ -2,7 +2,6 @@ locals {
   app_id = "${var.APP_ENV}-${substr(var.APP_NAME_HASH, 0, 12)}"
   tags = {
     application       = var.APP_NAME_HASH
-    organization      = var.APP_ORG
     organization-hash = var.APP_ORG_HASH
     environment       = var.APP_ENV
   }
