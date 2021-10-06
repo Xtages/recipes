@@ -7,6 +7,9 @@
         "image": "${APP_REPOSITORY_URL}:${APP_TAG}",
         "workingDirectory": "/",
         "command": ["node", "/usr/src/app/src/server.js"],
+        "links": [
+            "postgres"
+        ],
         "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
