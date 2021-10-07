@@ -15,7 +15,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
       driver = "rexray/ebs"
       driver_opts = {
           volumetype = "gp2"
-          size = 5
+          size = 1
       }
       labels = {
          Name = "postgres"
