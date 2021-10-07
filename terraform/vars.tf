@@ -49,3 +49,7 @@ variable "APP_BUILD_ID" {
 variable "BACKEND_BUCKET" {
   description = "S3 bucket where the Terraform state will be stored"
 }
+
+variable "PLAN" {
+  description = "Xtages tier plan, it could PAID or FREE. Certain deploy specs change according to each plan"
+}

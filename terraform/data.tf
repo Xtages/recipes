@@ -72,9 +72,9 @@ data "template_file" "app_task_definition" {
     APP_ORG_HASH         = var.APP_ORG_HASH
     APP_ENV              = var.APP_ENV
     APP_BUILD_ID         = var.APP_BUILD_ID
-    APP_VCPU             = lookup(local.xtages_backends[var.ENV], "app_td_vcpu")
-    APP_MEM              = lookup(local.xtages_backends[var.ENV], "app_td_mem")
-    NGINX_MEM            = lookup(local.xtages_backends[var.ENV], "nginx_td_mem")
-    NGINX_VCPU           = lookup(local.xtages_backends[var.ENV], "nginx_td_vcpu")
+    APP_VCPU             = var.PLAN == "PAID" ? lookup(local.xtages_backends[var.ENV], "app_td_vcpu") : lookup(local.free_plan, "app_td_vcpu")
+    APP_MEM              = var.PLAN == "PAID" ? lookup(local.xtages_backends[var.ENV], "app_td_mem") : lookup(local.free_plan, "app_td_mem")
+    NGINX_MEM            = var.PLAN == "PAID" ? lookup(local.xtages_backends[var.ENV], "nginx_td_mem") : lookup(local.free_plan, "nginx_td_mem")
+    NGINX_VCPU           = var.PLAN == "PAID" ? lookup(local.xtages_backends[var.ENV], "nginx_td_vcpu") : lookup(local.free_plan, "nginx_td_vcpu")
   }
 }
