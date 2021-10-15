@@ -20,6 +20,13 @@ locals {
   ecs_cluster_name = split("/", data.terraform_remote_state.customer_infra_ecs.outputs.xtages_ecs_cluster_id)[1]
   key_prefix = "tfstate/${var.aws_region}/${var.ENV}"
 
+  free_plan = {
+    app_td_vcpu   = 512
+    app_td_mem    = 512
+    nginx_td_vcpu = 256
+    nginx_td_mem  = 256
+  }
+
   xtages_backends = {
     development = {
       domain = "xtages.xyz"

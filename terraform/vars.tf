@@ -49,3 +49,8 @@ variable "APP_BUILD_ID" {
 variable "BACKEND_BUCKET" {
   description = "S3 bucket where the Terraform state will be stored"
 }
+
+variable "PLAN_PAID" {
+  description = "True if the plan is a paid one False if the plan is a free one"
+  type = bool
+}
