@@ -7,6 +7,16 @@ SCRIPT_DIR=$(dirname "${0}")
 # path for scripts
 SCRIPTS_PATH="${RECIPES_BASE_PATH}/${SCRIPT_DIR}"
 
+# defining domain variables in case those aren't coming from Console
+if [ "$(printenv | grep -c XTAGES_HOST_HEADER)" -eq 0 ]
+then
+    export XTAGES_HOST_HEADER=""
+fi
+if [ "$(printenv | grep -c XTAGES_CUSTOMER_DOMAIN)" -eq 0 ]
+then
+    export XTAGES_CUSTOMER_DOMAIN=""
+fi
+
 send_logs() {
   sh "${SCRIPTS_PATH}"/upload_logs.sh "${SCRIPTS_PATH}" "$1"
 }

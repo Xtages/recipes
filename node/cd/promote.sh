@@ -10,6 +10,16 @@ SCRIPTS_PATH="${RECIPES_BASE_PATH}/${SCRIPT_DIR}"
 STAGING_IMAGE_TAG="staging-${XTAGES_GH_PROJECT_TAG}"
 PRODUCTION_IMAGE_TAG="production-${XTAGES_GH_PROJECT_TAG}"
 
+# defining domain variables in case those aren't coming from Console
+if [ "$(printenv | grep -c XTAGES_HOST_HEADER)" -eq 0 ]
+then
+    export XTAGES_HOST_HEADER=""
+fi
+if [ "$(printenv | grep -c XTAGES_CUSTOMER_DOMAIN)" -eq 0 ]
+then
+    export XTAGES_CUSTOMER_DOMAIN=""
+fi
+
 check_prod_ecr_img() {
   aws ecr describe-images --repository-name "${XTAGES_PROJECT}" --image-ids imageTag="${PRODUCTION_IMAGE_TAG}" > /dev/null 2>&1
 }

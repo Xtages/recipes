@@ -3,6 +3,10 @@ set -euo pipefail
 
 declare -A buckets
 export buckets=(["production"]="xtages-tfstate-customers" ["development"]="xtages-tfstate-customers-development")
+if [ "$(printenv | grep -c XTAGES_PLAN_PAID)" -eq 0 ]
+then
+    export XTAGES_PLAN_PAID="false"
+fi
 
 SCRIPT_DIR=$(dirname "${0}")
 RECIPES_BASE_PATH="${1}"
@@ -19,7 +23,7 @@ export TF_VAR_HOST_HEADER="${XTAGES_HOST_HEADER}"
 export TF_VAR_CUSTOMER_DOMAIN="${XTAGES_CUSTOMER_DOMAIN}"
 export TF_VAR_APP_BUILD_ID="${XTAGES_BUILD_ID}"
 export TF_VAR_ENV="${XTAGES_ENV}"
-export TF_VAR_PLAN="${XTAGES_PLAN}"
+export TF_VAR_PLAN_PAID="${XTAGES_PLAN_PAID}"
 export TF_VAR_BACKEND_BUCKET="${buckets[${XTAGES_ENV}]}"
 
 cd "${RECIPES_BASE_PATH}"/terraform

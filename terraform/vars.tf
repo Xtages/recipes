@@ -53,4 +53,5 @@ variable "BACKEND_BUCKET" {
 variable "PLAN_PAID" {
   description = "True if the plan is a paid one False if the plan is a free one"
   type = bool
+  default = false
 }

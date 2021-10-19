@@ -3,6 +3,20 @@ set -euo pipefail
 
 declare -A environments
 export environments=(["production"]="606626603369" ["development"]="605769209612")
+# defining XTAGES_DB_PASS variable in case the DB hasn't been provisioned yet
+if [ "$(printenv | grep -c XTAGES_DB_PASS)" -eq 0 ]
+then
+    export XTAGES_DB_PASS=""
+fi
+# defining domain variables in case those aren't coming from Console
+if [ "$(printenv | grep -c XTAGES_HOST_HEADER)" -eq 0 ]
+then
+    export XTAGES_HOST_HEADER=""
+fi
+if [ "$(printenv | grep -c XTAGES_CUSTOMER_DOMAIN)" -eq 0 ]
+then
+    export XTAGES_CUSTOMER_DOMAIN=""
+fi
 
 # this path is inferred from the buildspec file that is in S3 repo tf_live_production
 # assigning variables for paths as they need to be relative to run in CodeBuild

@@ -5,7 +5,7 @@ resource "aws_cloudwatch_log_metric_filter" "nginx_bytes_sent" {
 
   metric_transformation {
     name      = "nginx_bytes_sent"
-    namespace = var.APP_NAME_HASH
+    namespace = "customer-metrics"
     value     = "$.body_bytes_sent"
     unit      = "Bytes"
 
