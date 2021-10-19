@@ -3,6 +3,10 @@ set -euo pipefail
 
 declare -A buckets
 export buckets=(["production"]="xtages-tfstate-customers" ["development"]="xtages-tfstate-customers-development")
+if [ "$(printenv | grep -c XTAGES_PLAN_PAID)" -eq 0 ]
+then
+    export XTAGES_PLAN_PAID="false"
+fi
 
 SCRIPT_DIR=$(dirname "${0}")
 RECIPES_BASE_PATH="${1}"
