@@ -42,7 +42,7 @@ trap 'send_logs $?' EXIT
 # build docker image and push it to ECR
 # docker login is performed in the buildspec (S3)
 #sh "${SCRIPTS_PATH}"/metrics.sh "docker" "0" "command=build"
-IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/${XTAGES_PROJECT}:staging-${XTAGES_GH_PROJECT_TAG}"
+IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/${XTAGES_PROJECT}:${XTAGES_APP_ENV}-${XTAGES_GH_PROJECT_TAG}"
 echo "########### Building Application Code ###########"
 docker build --progress plain --build-arg AWS_ACCOUNT="${AWS_ACCOUNT_ID}" \
   --build-arg NODE_VERSION="${XTAGES_NODE_VER}" \
@@ -61,5 +61,4 @@ docker push "${IMAGE_NAME}" >> "${SCRIPTS_PATH}"/docker.log 2>&1
 
 echo "########### Deploying to Xtages Cloud ###########"
 # deploy to ECS with Terraform
-# the deploy script always targets "staging"
-sh "${SCRIPTS_PATH}"/_deploy_to_ecs.sh "${RECIPES_BASE_PATH}" "staging" "${XTAGES_GH_PROJECT_TAG}"
+sh "${SCRIPTS_PATH}"/_deploy_to_ecs.sh "${RECIPES_BASE_PATH}" "${XTAGES_APP_ENV}" "${XTAGES_GH_PROJECT_TAG}"
